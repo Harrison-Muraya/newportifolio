@@ -1,17 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Harrison Muraya - Software Developer</title>
+
+    <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'harrison/css/style.css' %}">
 </head>
+
 <body class="bg-gray-50">
 
-    {% block content %}{% endblock %}
-    {% load static %}
-    <script src="{% static 'harrison/js/base.html' %}"></script>
-    
+    {% block content %}
+    {% endblock %}
+
+    <!-- Custom JS -->
+    <script src="{% static 'harrison/js/base.js' %}"></script>
 </body>
 </html>
