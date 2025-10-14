@@ -1,1 +1,2 @@
 Set-ExecutionPolicy Unrestricted -Scope Process
+pip install whitenoise
