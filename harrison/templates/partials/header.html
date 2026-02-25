@@ -1,33 +1,69 @@
 {% load static %}
-<!-- Navigation -->
-<nav class="fixed w-full bg-white/80 backdrop-blur-md z-50 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-            <div class="text-2xl font-bold gradient-text">HM</div>
-            <div class="hidden md:flex space-x-8">
-                <a href="#home" class="nav-link text-gray-700 hover:text-purple-600 font-medium">Home</a>
-                <a href="#about" class="nav-link text-gray-700 hover:text-purple-600 font-medium">About</a>
-                <a href="#experience" class="nav-link text-gray-700 hover:text-purple-600 font-medium">Experience</a>
-                <a href="#projects" class="nav-link text-gray-700 hover:text-purple-600 font-medium">Projects</a>
-                <a href="#gallery" class="nav-link text-gray-700 hover:text-purple-600 font-medium hidden">Gallery</a>
-                <a href="#contact" class="nav-link text-gray-700 hover:text-purple-600 font-medium">Contact</a>
+<nav class="fixed w-full z-50 transition-all duration-500" id="navbar">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="flex justify-between items-center h-20">
+            <a href="#home" class="font-syne text-2xl font-bold tracking-tight">
+                <span class="text-white">H</span><span class="text-violet-400">M</span>
+            </a>
+            
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#home" class="nav-link text-white/60 hover:text-white font-medium text-sm tracking-wide transition">Home</a>
+                <a href="#about" class="nav-link text-white/60 hover:text-white font-medium text-sm tracking-wide transition">About</a>
+                <a href="#experience" class="nav-link text-white/60 hover:text-white font-medium text-sm tracking-wide transition">Experience</a>
+                <a href="#projects" class="nav-link text-white/60 hover:text-white font-medium text-sm tracking-wide transition">Projects</a>
+                <a href="#gallery" class="nav-link text-white/60 hover:text-white font-medium text-sm tracking-wide transition">Gallery</a>
+                <a href="#contact" class="nav-link text-white/60 hover:text-white font-medium text-sm tracking-wide transition">Contact</a>
             </div>
-            <button id="mobileMenuBtn" class="md:hidden">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-            </button>
+
+            <div class="flex items-center gap-3">
+                {% if request.user.is_authenticated %}
+                    <div class="hidden md:flex items-center gap-3">
+                        {% if request.user.is_superuser %}
+                        <button onclick="openUploadModal()" class="px-4 py-2 bg-violet-600/20 border border-violet-500/30 text-violet-300 rounded-full text-sm font-medium hover:bg-violet-600/30 transition">
+                            + Upload
+                        </button>
+                        <a href="/admin/" class="px-4 py-2 bg-white/5 border border-white/10 text-white/70 rounded-full text-sm font-medium hover:bg-white/10 transition">Admin</a>
+                        {% endif %}
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center text-white text-xs font-bold">
+                                {{ request.user.username|first|upper }}
+                            </div>
+                            <a href="/logout/" class="text-white/50 hover:text-white text-sm transition">Logout</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="/login/" class="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-full text-sm font-semibold hover:opacity-90 transition shadow-lg shadow-violet-500/25">
+                        Sign In
+                    </a>
+                {% endif %}
+
+                <button id="mobileMenuBtn" class="md:hidden w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
+
     <!-- Mobile Menu -->
-    <div id="mobileMenu" class="hidden md:hidden bg-white border-t">
-        <div class="px-2 pt-2 pb-3 space-y-1">
-            <a href="#home" class="block px-3 py-2 text-gray-700 hover:bg-purple-50 rounded">Home</a>
-            <a href="#about" class="block px-3 py-2 text-gray-700 hover:bg-purple-50 rounded">About</a>
-            <a href="#experience" class="block px-3 py-2 text-gray-700 hover:bg-purple-50 rounded">Experience</a>
-            <a href="#projects" class="block px-3 py-2 text-gray-700 hover:bg-purple-50 rounded">Projects</a>
-            <a href="#gallery" class="block px-3 py-2 text-gray-700 hover:bg-purple-50 rounded hidden">Gallery</a>
-            <a href="#contact" class="block px-3 py-2 text-gray-700 hover:bg-purple-50 rounded">Contact</a>
+    <div id="mobileMenu" class="hidden md:hidden bg-[#0c0c18]/95 backdrop-blur-xl border-t border-white/10">
+        <div class="px-6 py-4 space-y-2">
+            <a href="#home" class="block py-2 text-white/70 hover:text-white transition text-sm">Home</a>
+            <a href="#about" class="block py-2 text-white/70 hover:text-white transition text-sm">About</a>
+            <a href="#experience" class="block py-2 text-white/70 hover:text-white transition text-sm">Experience</a>
+            <a href="#projects" class="block py-2 text-white/70 hover:text-white transition text-sm">Projects</a>
+            <a href="#gallery" class="block py-2 text-white/70 hover:text-white transition text-sm">Gallery</a>
+            <a href="#contact" class="block py-2 text-white/70 hover:text-white transition text-sm">Contact</a>
+            {% if request.user.is_authenticated %}
+                {% if request.user.is_superuser %}
+                <button onclick="openUploadModal()" class="block py-2 text-violet-400 transition text-sm w-full text-left">+ Upload Image</button>
+                <a href="/admin/" class="block py-2 text-white/70 hover:text-white transition text-sm">Admin Panel</a>
+                {% endif %}
+                <a href="/logout/" class="block py-2 text-rose-400 hover:text-rose-300 transition text-sm">Logout</a>
+            {% else %}
+                <a href="/login/" class="block py-2 text-violet-400 hover:text-violet-300 transition text-sm">Sign In</a>
+            {% endif %}
         </div>
     </div>
 </nav>

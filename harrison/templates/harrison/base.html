@@ -4,21 +4,22 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Harrison Muraya - Software Developer</title>
-
-    <!-- Tailwind CDN -->
+    <title>Harrison Muraya — Software Developer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'harrison/css/style.css' %}">
 </head>
+<body class="bg-[#080810] text-white overflow-x-hidden">
 
-<body class="bg-gray-50">
+    {% block content %}{% endblock %}
 
-    {% block content %}
-    {% endblock %}
-
-    <!-- Custom JS -->
+    <script>
+        const CSRF_TOKEN = "{{ csrf_token }}";
+        const IS_AUTHENTICATED = {{ request.user.is_authenticated|yesno:"true,false" }};
+        const IS_SUPERUSER = {{ request.user.is_superuser|yesno:"true,false" }};
+        const USERNAME = "{{ request.user.username|default:'' }}";
+    </script>
     <script src="{% static 'harrison/js/base.js' %}"></script>
 </body>
 </html>

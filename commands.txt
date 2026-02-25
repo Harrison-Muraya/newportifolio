@@ -1,2 +1,3 @@
 Set-ExecutionPolicy Unrestricted -Scope Process
 pip install whitenoise
+py manage.py runserver
