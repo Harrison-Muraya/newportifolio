@@ -1,0 +1,131 @@
+{% extends 'harrison/dashboard_base.html' %}
+
+{% block page_title %}Message from {{ msg.display_name }}{% endblock %}
+{% block topbar_title %}Message Detail{% endblock %}
+{% block nav_inbox %}active{% endblock %}
+
+{% block topbar_actions %}
+  <a href="{% url 'inbox' %}" class="topbar-btn">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    Back to Inbox
+  </a>
+{% endblock %}
+
+{% block content %}
+
+  <div class="breadcrumb">
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+    <a href="{% url 'inbox' %}">Inbox</a>
+    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+    <span>{{ msg.display_name }}</span>
+  </div>
+
+  <div class="msg-bubble">
+    <!-- Header -->
+    <div class="msg-meta-row">
+      <div class="msg-avatar">{{ msg.display_name|first|upper }}</div>
+      <div>
+        <div class="msg-from">{{ msg.display_name }}</div>
+        <div class="msg-email">
+          {% if msg.display_email != 'No email provided' %}
+            <a href="mailto:{{ msg.display_email }}" style="color:var(--dash-accent);text-decoration:none;">{{ msg.display_email }}</a>
+          {% else %}
+            <span style="color:#ccc;">No email provided</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="msg-date">
+        {{ msg.sent_at|date:"F d, Y" }} at {{ msg.sent_at|time:"g:i A" }}
+      </div>
+      <div>
+        <span class="badge {% if msg.is_read %}badge-read{% else %}badge-new{% endif %}" id="status-badge">
+          <span class="badge-dot"></span>
+          {% if msg.is_read %}Read{% else %}New{% endif %}
+        </span>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="msg-body">{{ msg.message }}</div>
+
+    <!-- Actions -->
+    <div class="msg-actions">
+      {% if msg.display_email != 'No email provided' %}
+      <a href="mailto:{{ msg.display_email }}?subject=Re: Your message&body=Hi {{ msg.display_name }},%0A%0A" 
+         class="action-btn action-btn-view">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+        Reply via Email
+      </a>
+      {% endif %}
+
+      <button class="action-btn" 
+              style="background:#f5f5f5;color:var(--dash-muted);border-color:#ddd;"
+              id="toggleReadBtn"
+              onclick="toggleRead()">
+        {% if msg.is_read %}
+        Mark as Unread
+        {% else %}
+        Mark as Read
+        {% endif %}
+      </button>
+
+      <button class="action-btn action-btn-delete" onclick="confirmDeleteMsg()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        Delete
+      </button>
+    </div>
+  </div>
+
+  <!-- Navigation between messages -->
+  <div style="display:flex;gap:0.75rem;margin-top:1.5rem;">
+    <a href="{% url 'inbox' %}" class="dash-btn-cancel">← Back to all messages</a>
+  </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  let isRead = {{ msg.is_read|yesno:"true,false" }};
+
+  async function toggleRead() {
+    const res = await fetch('/dashboard/inbox/{{ msg.id }}/toggle-read/', {
+      method: 'POST',
+      headers: { 'X-CSRFToken': CSRF_TOKEN }
+    });
+    const data = await res.json();
+    isRead = data.is_read;
+    const badge = document.getElementById('status-badge');
+    const btn = document.getElementById('toggleReadBtn');
+    if (isRead) {
+      badge.className = 'badge badge-read';
+      badge.innerHTML = '<span class="badge-dot"></span>Read';
+      btn.textContent = 'Mark as Unread';
+      showDashToast('Marked as read');
+    } else {
+      badge.className = 'badge badge-new';
+      badge.innerHTML = '<span class="badge-dot"></span>New';
+      btn.textContent = 'Mark as Read';
+      showDashToast('Marked as unread');
+    }
+  }
+
+  function confirmDeleteMsg() {
+    openConfirm(
+      'Delete Message',
+      'Delete this message from "{{ msg.display_name|escapejs }}"? This cannot be undone.',
+      async () => {
+        const res = await fetch('/dashboard/inbox/{{ msg.id }}/delete/', {
+          method: 'POST',
+          headers: { 'X-CSRFToken': CSRF_TOKEN }
+        });
+        const data = await res.json();
+        if (data.success) {
+          showDashToast('Message deleted');
+          setTimeout(() => window.location.href = '{% url "inbox" %}', 700);
+        }
+      }
+    );
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,159 @@
+{% extends 'harrison/dashboard_base.html' %}
+
+{% block page_title %}Messages Inbox{% endblock %}
+{% block topbar_title %}Messages Inbox{% endblock %}
+{% block nav_inbox %}active{% endblock %}
+
+{% block topbar_actions %}
+  <span style="font-size:0.8125rem;color:var(--dash-muted);">
+    {% if unread_count %}
+      <strong style="color:var(--dash-accent);">{{ unread_count }}</strong> unread
+    {% else %}
+      All caught up ✓
+    {% endif %}
+  </span>
+{% endblock %}
+
+{% block content %}
+
+  <!-- Filter tabs -->
+  <div style="display:flex;gap:0.5rem;margin-bottom:1.5rem;">
+    <a href="?filter=all" class="action-btn {% if filter_type == 'all' %}action-btn-view{% endif %}"
+       style="{% if filter_type != 'all' %}background:white;color:var(--dash-muted);border-color:var(--dash-border);{% endif %}">
+      All
+    </a>
+    <a href="?filter=unread" class="action-btn {% if filter_type == 'unread' %}action-btn-view{% endif %}"
+       style="{% if filter_type != 'unread' %}background:white;color:var(--dash-muted);border-color:var(--dash-border);{% endif %}">
+      Unread
+    </a>
+    <a href="?filter=read" class="action-btn {% if filter_type == 'read' %}action-btn-view{% endif %}"
+       style="{% if filter_type != 'read' %}background:white;color:var(--dash-muted);border-color:var(--dash-border);{% endif %}">
+      Read
+    </a>
+  </div>
+
+  <div class="dash-table-wrap">
+    {% if messages_list %}
+    <table>
+      <thead>
+        <tr>
+          <th style="width:2.5rem;"></th>
+          <th>From</th>
+          <th>Email</th>
+          <th>Message</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for msg in messages_list %}
+        <tr style="cursor:pointer;" id="msg-row-{{ msg.id }}">
+          <!-- Avatar -->
+          <td onclick="window.location='{% url 'message_detail' msg.id %}'">
+            <div style="width:2rem;height:2rem;border-radius:50%;background:{% if msg.is_read %}#e5e7eb{% else %}var(--dash-ink){% endif %};color:{% if msg.is_read %}var(--dash-muted){% else %}white{% endif %};display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;">
+              {{ msg.display_name|first|upper }}
+            </div>
+          </td>
+          <!-- From -->
+          <td onclick="window.location='{% url 'message_detail' msg.id %}'" style="{% if not msg.is_read %}font-weight:700;color:var(--dash-ink);{% endif %}">
+            {{ msg.display_name }}
+          </td>
+          <!-- Email -->
+          <td onclick="window.location='{% url 'message_detail' msg.id %}'" style="font-size:0.8125rem;color:var(--dash-muted);">
+            {% if msg.display_email != 'No email provided' %}
+              {{ msg.display_email }}
+            {% else %}
+              <span style="color:#ccc;">—</span>
+            {% endif %}
+          </td>
+          <!-- Preview -->
+          <td onclick="window.location='{% url 'message_detail' msg.id %}'" style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dash-muted);font-size:0.875rem;">
+            {{ msg.message|truncatechars:80 }}
+          </td>
+          <!-- Date -->
+          <td onclick="window.location='{% url 'message_detail' msg.id %}'" style="font-size:0.8125rem;color:var(--dash-muted);white-space:nowrap;">
+            {{ msg.sent_at|date:"M d, Y" }}<br>
+            <span style="font-size:0.75rem;">{{ msg.sent_at|time:"g:i A" }}</span>
+          </td>
+          <!-- Status -->
+          <td onclick="window.location='{% url 'message_detail' msg.id %}'">
+            {% if msg.is_read %}
+            <span class="badge badge-read" id="status-badge-{{ msg.id }}"><span class="badge-dot"></span>Read</span>
+            {% else %}
+            <span class="badge badge-new" id="status-badge-{{ msg.id }}"><span class="badge-dot"></span>New</span>
+            {% endif %}
+          </td>
+          <!-- Actions -->
+          <td>
+            <div style="display:flex;gap:0.4rem;">
+              <a href="{% url 'message_detail' msg.id %}" class="action-btn action-btn-view">View</a>
+              <button class="action-btn" 
+                      id="toggle-btn-{{ msg.id }}"
+                      style="background:#f5f5f5;color:var(--dash-muted);border-color:#ddd;"
+                      onclick="toggleRead({{ msg.id }})"
+                      title="Toggle read status">
+                {% if msg.is_read %}Unread{% else %}Read{% endif %}
+              </button>
+              <button class="action-btn action-btn-delete" onclick="confirmDelete({{ msg.id }}, '{{ msg.display_name|escapejs }}')">Del</button>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+      <p>
+        {% if filter_type == 'unread' %}No unread messages.{% elif filter_type == 'read' %}No read messages yet.{% else %}No messages yet. They'll appear here when visitors reach out.{% endif %}
+      </p>
+    </div>
+    {% endif %}
+  </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+async function toggleRead(id) {
+  const res = await fetch(`/dashboard/inbox/${id}/toggle-read/`, {
+    method: 'POST',
+    headers: { 'X-CSRFToken': CSRF_TOKEN }
+  });
+  const data = await res.json();
+  const badge = document.getElementById(`status-badge-${id}`);
+  const btn = document.getElementById(`toggle-btn-${id}`);
+  if (data.is_read) {
+    badge.className = 'badge badge-read';
+    badge.innerHTML = '<span class="badge-dot"></span>Read';
+    btn.textContent = 'Unread';
+    showDashToast('Marked as read');
+  } else {
+    badge.className = 'badge badge-new';
+    badge.innerHTML = '<span class="badge-dot"></span>New';
+    btn.textContent = 'Read';
+    showDashToast('Marked as unread');
+  }
+}
+
+function confirmDelete(id, name) {
+  openConfirm(
+    'Delete Message',
+    `Delete this message from "${name}"? This cannot be undone.`,
+    async () => {
+      const res = await fetch(`/dashboard/inbox/${id}/delete/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': CSRF_TOKEN }
+      });
+      const data = await res.json();
+      if (data.success) {
+        const row = document.getElementById(`msg-row-${id}`);
+        if (row) row.remove();
+        showDashToast('Message deleted');
+      }
+    }
+  );
+}
+</script>
+{% endblock %}

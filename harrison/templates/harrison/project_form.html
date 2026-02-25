@@ -1,0 +1,173 @@
+{% extends 'harrison/dashboard_base.html' %}
+{% load static %}
+
+{% block page_title %}{{ form_title }}{% endblock %}
+{% block topbar_title %}{{ form_title }}{% endblock %}
+{% block nav_projects %}active{% endblock %}
+
+{% block topbar_actions %}
+  <a href="{% url 'project_list' %}" class="topbar-btn">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    Back to Projects
+  </a>
+{% endblock %}
+
+{% block content %}
+
+  <div class="breadcrumb">
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+    <a href="{% url 'project_list' %}">Projects</a>
+    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+    <span>{{ form_title }}</span>
+  </div>
+
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div style="display:grid;grid-template-columns:1fr 340px;gap:1.5rem;align-items:start;">
+
+      <!-- Main fields -->
+      <div class="dash-form-card">
+
+        <div class="dash-form-group">
+          <label class="dash-label" for="id_title">Title <span style="color:var(--dash-accent);">*</span></label>
+          <input type="text" name="title" id="id_title" class="dash-input"
+                 value="{{ project.title|default:'' }}"
+                 placeholder="e.g. Domain Management Platform" required>
+        </div>
+
+        <div class="dash-form-group">
+          <label class="dash-label" for="id_description">Description <span style="color:var(--dash-accent);">*</span></label>
+          <textarea name="description" id="id_description" class="dash-textarea" rows="4"
+                    placeholder="A concise description of the project, what it does, and how you built it." required>{{ project.description|default:'' }}</textarea>
+        </div>
+
+        <div class="dash-form-group">
+          <label class="dash-label" for="id_tags">Tags</label>
+          <input type="text" name="tags" id="id_tags" class="dash-input"
+                 value="{{ project.tags|default:'' }}"
+                 placeholder="Laravel, Livewire, Tailwind">
+          <div class="dash-input-hint">Comma-separated list of technologies or keywords.</div>
+        </div>
+
+        <div class="dash-form-row">
+          <div class="dash-form-group">
+            <label class="dash-label" for="id_url">Project URL</label>
+            <input type="url" name="url" id="id_url" class="dash-input"
+                   value="{{ project.url|default:'' }}"
+                   placeholder="https://yourproject.com">
+          </div>
+          <div class="dash-form-group">
+            <label class="dash-label" for="id_url_label">Link Label</label>
+            <input type="text" name="url_label" id="id_url_label" class="dash-input"
+                   value="{{ project.url_label|default:'View Project' }}"
+                   placeholder="View Project">
+          </div>
+        </div>
+
+        <div class="dash-form-row">
+          <div class="dash-form-group">
+            <label class="dash-label" for="id_order">Display Order</label>
+            <input type="number" name="order" id="id_order" class="dash-input"
+                   value="{{ project.order|default:'0' }}"
+                   min="0" placeholder="0">
+            <div class="dash-input-hint">Lower numbers appear first.</div>
+          </div>
+          <div class="dash-form-group">
+            <label class="dash-label">Accent Color</label>
+            <div class="color-grid">
+              {% for value, label in color_choices %}
+              <label class="color-option">
+                <input type="radio" name="color" value="{{ value }}"
+                       {% if project.color == value or not project and value == 'violet' %}checked{% endif %}>
+                <div class="color-swatch" style="background:
+                  {% if value == 'violet' %}#7C3AED
+                  {% elif value == 'blue' %}#2563EB
+                  {% elif value == 'emerald' %}#059669
+                  {% elif value == 'rose' %}#E11D48
+                  {% elif value == 'yellow' %}#D97706
+                  {% elif value == 'pink' %}#DB2777
+                  {% else %}#888{% endif %};">
+                  <svg fill="white" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                </div>
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-submit-row">
+          <button type="submit" class="dash-btn-submit">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:.875rem;height:.875rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            {% if action == 'edit' %}Save Changes{% else %}Create Project{% endif %}
+          </button>
+          <a href="{% url 'project_list' %}" class="dash-btn-cancel">Cancel</a>
+        </div>
+      </div>
+
+      <!-- Right: BG image -->
+      <div>
+        <div class="dash-form-card" style="max-width:100%;">
+          <div style="font-size:0.875rem;font-weight:700;color:var(--dash-ink);margin-bottom:1rem;">Background Image <span style="font-weight:400;color:var(--dash-muted);">(optional)</span></div>
+
+          {% if project.bg_image %}
+          <div class="img-preview-wrap" id="currentBgWrap">
+            <img src="{{ project.bg_image.url }}" alt="Current BG" style="width:100%;max-height:160px;object-fit:cover;">
+            <div style="margin-top:0.5rem;display:flex;align-items:center;gap:0.5rem;">
+              <span style="font-size:0.75rem;color:var(--dash-muted);">Current image</span>
+              <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.75rem;color:#C62828;cursor:pointer;">
+                <input type="checkbox" name="remove_bg" value="1" id="removeBgCheck" onchange="handleRemoveBg(this)">
+                Remove
+              </label>
+            </div>
+          </div>
+          {% endif %}
+
+          <div class="dash-form-group" style="margin-top:{% if project.bg_image %}1rem{% else %}0{% endif %};">
+            <label class="dash-label" for="id_bg_image">{% if project.bg_image %}Replace with{% else %}Upload{% endif %} Image</label>
+            <input type="file" name="bg_image" id="id_bg_image" accept="image/*"
+                   class="dash-input" style="padding:0.5rem;"
+                   onchange="previewBg(this)">
+            <div class="dash-input-hint">JPG, PNG, WebP. Displays behind the project card.</div>
+          </div>
+
+          <div id="newBgPreview" class="img-preview-wrap" style="display:none;margin-top:0.5rem;">
+            <img id="newBgImg" src="" alt="Preview" style="width:100%;max-height:140px;object-fit:cover;border-radius:0.375rem;">
+            <div style="font-size:0.75rem;color:var(--dash-muted);margin-top:0.35rem;">New image preview</div>
+          </div>
+
+          {% if action == 'edit' and project.bg_image %}
+          <div style="margin-top:1rem;padding:0.75rem;background:var(--dash-bg);border-radius:0.5rem;font-size:0.75rem;color:var(--dash-muted);">
+            Uploading a new image will replace the current one.
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+  </form>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function previewBg(input) {
+  const preview = document.getElementById('newBgPreview');
+  const img = document.getElementById('newBgImg');
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      img.src = e.target.result;
+      preview.style.display = 'block';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+function handleRemoveBg(checkbox) {
+  const wrap = document.getElementById('currentBgWrap');
+  if (wrap) wrap.style.opacity = checkbox.checked ? '0.4' : '1';
+}
+</script>
+{% endblock %}

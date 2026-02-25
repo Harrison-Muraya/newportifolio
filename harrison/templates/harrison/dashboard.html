@@ -1,0 +1,152 @@
+{% extends 'harrison/dashboard_base.html' %}
+
+{% block page_title %}Overview{% endblock %}
+{% block topbar_title %}Overview{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block topbar_actions %}
+  <a href="{% url 'project_create' %}" class="topbar-btn topbar-btn-primary">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+    New Project
+  </a>
+{% endblock %}
+
+{% block content %}
+
+  <!-- Stat cards -->
+  <div class="stat-grid">
+    <div class="stat-card-dash accent-card">
+      <div class="stat-label">Unread Messages</div>
+      <div class="stat-value">{{ unread_count }}</div>
+    </div>
+    <div class="stat-card-dash">
+      <div class="stat-label">Total Messages</div>
+      <div class="stat-value">{{ total_messages }}</div>
+    </div>
+    <div class="stat-card-dash">
+      <div class="stat-label">Projects</div>
+      <div class="stat-value">{{ total_projects }}</div>
+    </div>
+    <div class="stat-card-dash">
+      <div class="stat-label">Gallery Images</div>
+      <div class="stat-value">{{ total_gallery }}</div>
+    </div>
+  </div>
+
+  <!-- Two-column layout: recent messages + projects quick list -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+
+    <!-- Recent Messages -->
+    <div class="dash-table-wrap">
+      <div class="dash-table-header">
+        <div class="dash-table-title">Recent Messages</div>
+        <a href="{% url 'inbox' %}" class="action-btn action-btn-view">View all</a>
+      </div>
+      {% if recent_messages %}
+      <table>
+        <thead>
+          <tr>
+            <th>From</th>
+            <th>Preview</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for msg in recent_messages %}
+          <tr style="cursor:pointer;" onclick="window.location='{% url 'message_detail' msg.id %}'">
+            <td>
+              <div style="font-weight:600;color:var(--dash-ink);">{{ msg.display_name }}</div>
+              <div style="font-size:0.75rem;color:var(--dash-muted);">{{ msg.sent_at|date:"M d, Y" }}</div>
+            </td>
+            <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dash-muted);">
+              {{ msg.message|truncatechars:60 }}
+            </td>
+            <td>
+              {% if msg.is_read %}
+              <span class="badge badge-read"><span class="badge-dot"></span>Read</span>
+              {% else %}
+              <span class="badge badge-new"><span class="badge-dot"></span>New</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        <p>No messages yet</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Projects quick list -->
+    <div class="dash-table-wrap">
+      <div class="dash-table-header">
+        <div class="dash-table-title">Projects</div>
+        <a href="{% url 'project_create' %}" class="action-btn action-btn-edit">+ Add</a>
+      </div>
+      {% if projects %}
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Tags</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for project in projects %}
+          <tr>
+            <td>
+              <div style="font-weight:600;color:var(--dash-ink);">{{ project.title }}</div>
+              {% if project.url %}
+              <a href="{{ project.url }}" target="_blank" style="font-size:0.75rem;color:var(--dash-muted);text-decoration:none;">↗ {{ project.url|truncatechars:30 }}</a>
+              {% endif %}
+            </td>
+            <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dash-muted);font-size:0.8125rem;">
+              {{ project.tags|truncatechars:35 }}
+            </td>
+            <td>
+              <div style="display:flex;gap:0.4rem;">
+                <a href="{% url 'project_edit' project.id %}" class="action-btn action-btn-edit">Edit</a>
+                <button class="action-btn action-btn-delete" onclick="confirmDeleteProject({{ project.id }}, '{{ project.title|escapejs }}')">Del</button>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+        <p>No projects yet. <a href="{% url 'project_create' %}" style="color:var(--dash-accent);">Create one →</a></p>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function confirmDeleteProject(id, name) {
+  openConfirm(
+    'Delete Project',
+    `Are you sure you want to delete "${name}"? This cannot be undone.`,
+    async () => {
+      const res = await fetch(`/dashboard/projects/${id}/delete/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': CSRF_TOKEN }
+      });
+      const data = await res.json();
+      if (data.success) {
+        showDashToast(`"${data.name}" deleted`);
+        setTimeout(() => location.reload(), 700);
+      }
+    }
+  );
+}
+</script>
+{% endblock %}

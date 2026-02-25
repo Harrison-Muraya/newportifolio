@@ -1,0 +1,113 @@
+{% extends 'harrison/dashboard_base.html' %}
+
+{% block page_title %}Projects{% endblock %}
+{% block topbar_title %}Projects{% endblock %}
+{% block nav_projects %}active{% endblock %}
+
+{% block topbar_actions %}
+  <a href="{% url 'project_create' %}" class="topbar-btn topbar-btn-primary">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+    New Project
+  </a>
+{% endblock %}
+
+{% block content %}
+
+  <div class="dash-table-wrap">
+    <div class="dash-table-header">
+      <div class="dash-table-title">All Projects <span style="color:var(--dash-muted);font-size:0.8125rem;font-weight:400;">({{ projects|length }})</span></div>
+    </div>
+
+    {% if projects %}
+    <table>
+      <thead>
+        <tr>
+          <th style="width:3rem;">Order</th>
+          <th>Title</th>
+          <th>Tags</th>
+          <th>URL</th>
+          <th>BG Image</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="projectsTableBody">
+        {% for project in projects %}
+        <tr id="proj-row-{{ project.id }}">
+          <td style="color:var(--dash-muted);text-align:center;">{{ project.order }}</td>
+          <td>
+            <div style="font-weight:700;color:var(--dash-ink);">{{ project.title }}</div>
+            <div style="font-size:0.75rem;color:var(--dash-muted);margin-top:0.15rem;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+              {{ project.description|truncatechars:60 }}
+            </div>
+          </td>
+          <td>
+            <div style="display:flex;gap:0.25rem;flex-wrap:wrap;max-width:180px;">
+              {% for tag in project.get_tags_list %}
+              <span style="background:var(--dash-bg);border:1px solid var(--dash-border);border-radius:2rem;padding:0.15rem 0.5rem;font-size:0.6875rem;font-weight:600;color:var(--dash-muted);">{{ tag }}</span>
+              {% endfor %}
+            </div>
+          </td>
+          <td style="font-size:0.8125rem;">
+            {% if project.url %}
+            <a href="{{ project.url }}" target="_blank" style="color:var(--dash-accent);text-decoration:none;font-size:0.8125rem;">
+              {{ project.url_label }} ↗
+            </a>
+            {% else %}
+            <span style="color:#ccc;">—</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if project.bg_image %}
+            <img src="{{ project.bg_image.url }}" alt="BG" style="height:2rem;width:3rem;object-fit:cover;border-radius:0.25rem;border:1px solid var(--dash-border);">
+            {% else %}
+            <span style="font-size:0.8125rem;color:#ccc;">None</span>
+            {% endif %}
+          </td>
+          <td>
+            <div style="display:flex;gap:0.4rem;">
+              <a href="{% url 'project_edit' project.id %}" class="action-btn action-btn-edit">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                Edit
+              </a>
+              <button class="action-btn action-btn-delete" onclick="confirmDeleteProject({{ project.id }}, '{{ project.title|escapejs }}')">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                Delete
+              </button>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+      <p>No projects yet. <a href="{% url 'project_create' %}" style="color:var(--dash-accent);">Create your first project →</a></p>
+    </div>
+    {% endif %}
+  </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function confirmDeleteProject(id, name) {
+  openConfirm(
+    'Delete Project',
+    `Are you sure you want to delete "${name}"? This cannot be undone.`,
+    async () => {
+      const res = await fetch(`/dashboard/projects/${id}/delete/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': CSRF_TOKEN }
+      });
+      const data = await res.json();
+      if (data.success) {
+        const row = document.getElementById(`proj-row-${id}`);
+        if (row) row.remove();
+        showDashToast(`"${data.name}" deleted`);
+      }
+    }
+  );
+}
+</script>
+{% endblock %}
