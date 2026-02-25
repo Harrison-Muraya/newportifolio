@@ -1,66 +1,56 @@
 {% load static %}
-<section class="py-32 relative section-reveal" style="background:#FDFCF8;">
-    <div class="max-w-7xl mx-auto px-6 lg:px-8">
-        <div class="mb-16">
-            <span class="section-label">Background</span>
-            <h2 class="font-syne text-4xl md:text-5xl font-bold mt-3" style="color:#1A1408;">Education & Certifications</h2>
-        </div>
+<section id="education" class="section-reveal">
+  <div class="edu-inner">
+    <span class="section-label">Background</span>
+    <h2 class="section-title">Education &amp; Certifications</h2>
 
-        <div class="grid lg:grid-cols-2 gap-12">
-            <!-- Education -->
-            <div>
-                <h3 class="font-syne text-xl font-semibold mb-6 flex items-center gap-3" style="color:#5A5040;">
-                    <span class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:#FFD6E8;border:1.5px solid #FF3E8A;">
-                        <svg class="w-4 h-4" fill="#FF3E8A" viewBox="0 0 20 20"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z"/></svg>
-                    </span>
-                    Education
-                </h3>
-                <div class="space-y-4">
-                    <div class="rounded-2xl p-6 border-2 border-l-4" style="background:white;border-color:rgba(26,20,8,0.08);border-left-color:#FF3E8A;">
-                        <h4 class="font-syne font-bold" style="color:#1A1408;">BSc in Computer Science</h4>
-                        <p class="text-sm font-semibold mt-1" style="color:#FF3E8A;">University of Embu</p>
-                        <p class="text-sm" style="color:#5A5040;">Second Class Upper Division</p>
-                        <p class="text-xs mt-2" style="color:#B0A890;">Aug 2019 – Sep 2023</p>
-                    </div>
-                    <div class="rounded-2xl p-6 border-2 border-l-4" style="background:white;border-color:rgba(26,20,8,0.08);border-left-color:#F5C800;">
-                        <h4 class="font-syne font-bold" style="color:#1A1408;">KCSE</h4>
-                        <p class="text-sm font-semibold mt-1" style="color:#C9A000;">Koelel High School</p>
-                        <p class="text-xs mt-2" style="color:#B0A890;">Feb 2015 – Dec 2018</p>
-                    </div>
-                    <div class="rounded-2xl p-6 border-2 border-l-4" style="background:white;border-color:rgba(26,20,8,0.08);border-left-color:#00B87C;">
-                        <h4 class="font-syne font-bold" style="color:#1A1408;">KCPE</h4>
-                        <p class="text-sm font-semibold mt-1" style="color:#00B87C;">Bridges View Academy</p>
-                        <p class="text-xs mt-2" style="color:#B0A890;">Feb 2003 – Dec 2014</p>
-                    </div>
-                </div>
-            </div>
+    <div class="edu-grid">
 
-            <!-- Certifications -->
-            <div>
-                <h3 class="font-syne text-xl font-semibold mb-6 flex items-center gap-3" style="color:#5A5040;">
-                    <span class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:#FFF3A3;border:1.5px solid #F5C800;">
-                        <svg class="w-4 h-4" fill="#C9A000" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                    </span>
-                    Certifications
-                </h3>
-                <div class="space-y-4">
-                    <div class="rounded-2xl p-6 border-2 transition hover:shadow-md hover:border-yellow-300" style="background:white;border-color:rgba(26,20,8,0.08);">
-                        <h4 class="font-syne font-bold" style="color:#1A1408;">Intermediate Machine Learning</h4>
-                        <p class="text-sm font-semibold mt-1" style="color:#C9A000;">Kaggle</p>
-                        <p class="text-xs mt-2" style="color:#B0A890;">December 2024</p>
-                    </div>
-                    <div class="rounded-2xl p-6 border-2 transition hover:shadow-md hover:border-yellow-300" style="background:white;border-color:rgba(26,20,8,0.08);">
-                        <h4 class="font-syne font-bold" style="color:#1A1408;">Introduction to Machine Learning</h4>
-                        <p class="text-sm font-semibold mt-1" style="color:#C9A000;">Kaggle</p>
-                        <p class="text-xs mt-2" style="color:#B0A890;">November 2024</p>
-                    </div>
-                    <div class="rounded-2xl p-6 border-2 transition hover:shadow-md hover:border-yellow-300" style="background:white;border-color:rgba(26,20,8,0.08);">
-                        <h4 class="font-syne font-bold" style="color:#1A1408;">Data Science Training Program</h4>
-                        <p class="text-sm font-semibold mt-1" style="color:#C9A000;">Codtech IT Solutions</p>
-                        <p class="text-xs mt-2" style="color:#B0A890;">Sep – Nov 2024</p>
-                    </div>
-                </div>
-            </div>
+      <!-- Education -->
+      <div>
+        <div class="edu-group-title">Education</div>
+        <div class="edu-cards">
+          <div class="edu-card">
+            <div class="edu-degree">BSc in Computer Science</div>
+            <div class="edu-institution">University of Embu</div>
+            <div class="edu-detail">Second Class Upper Division</div>
+            <div class="edu-year">Aug 2019 – Sep 2023</div>
+          </div>
+          <div class="edu-card">
+            <div class="edu-degree">KCSE</div>
+            <div class="edu-institution">Koelel High School</div>
+            <div class="edu-year">Feb 2015 – Dec 2018</div>
+          </div>
+          <div class="edu-card">
+            <div class="edu-degree">KCPE</div>
+            <div class="edu-institution">Bridges View Academy</div>
+            <div class="edu-year">Feb 2003 – Dec 2014</div>
+          </div>
         </div>
+      </div>
+
+      <!-- Certifications -->
+      <div>
+        <div class="edu-group-title">Certifications</div>
+        <div class="edu-cards">
+          <div class="cert-card">
+            <div class="edu-degree">Intermediate Machine Learning</div>
+            <div class="edu-institution">Kaggle</div>
+            <div class="edu-year">December 2024</div>
+          </div>
+          <div class="cert-card">
+            <div class="edu-degree">Introduction to Machine Learning</div>
+            <div class="edu-institution">Kaggle</div>
+            <div class="edu-year">November 2024</div>
+          </div>
+          <div class="cert-card">
+            <div class="edu-degree">Data Science Training Program</div>
+            <div class="edu-institution">Codtech IT Solutions</div>
+            <div class="edu-year">Sep – Nov 2024</div>
+          </div>
+        </div>
+      </div>
+
     </div>
+  </div>
 </section>

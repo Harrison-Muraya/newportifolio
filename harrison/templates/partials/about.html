@@ -1,75 +1,57 @@
 {% load static %}
-<section id="about" class="py-32 relative section-reveal" style="background:#F5F3EC;">
-    <div class="max-w-7xl mx-auto px-6 lg:px-8">
-        <div class="mb-16">
-            <span class="section-label">About Me</span>
-            <h2 class="font-syne text-4xl md:text-5xl font-bold mt-3" style="color:#1A1408;">Who I am</h2>
+<section id="about" class="section-reveal">
+  <div class="about-inner">
+    <!-- Left: text + stats -->
+    <div>
+      <span class="section-label">About Me</span>
+      <h2 class="section-title">Who I Am</h2>
+
+      <div class="about-text">
+        <p>
+          Results-driven Software Developer with expertise in full-stack web development,
+          payment system integration, and IT support. I thrive on building things that matter —
+          products that are <strong>secure, performant, and real-world ready</strong>.
+        </p>
+        <p>
+          I specialise in <strong>Laravel</strong>, <strong>Django</strong>, and <strong>React</strong>,
+          with hands-on experience integrating PayPal, Chpter, and M-Pesa APIs. I deliver
+          high-performance solutions aligned tightly with business objectives.
+        </p>
+      </div>
+
+      <div class="about-stats-row">
+        <div class="stat-card">
+          <div class="stat-card-num">3+</div>
+          <div class="stat-card-label">Years</div>
         </div>
-
-        <div class="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
-                <p class="text-lg leading-relaxed mb-6" style="color:#5A5040;">
-                    Results-driven Software Developer with expertise in full-stack web development, payment system integration, and IT support. I thrive on building things that matter.
-                </p>
-                <p class="text-lg leading-relaxed mb-10" style="color:#8A7A60;">
-                    I specialize in secure, scalable applications using modern frameworks like <span style="color:#FF3E8A;font-weight:600;">Laravel</span>, <span style="color:#FF3E8A;font-weight:600;">Django</span>, and <span style="color:#FF3E8A;font-weight:600;">React</span>. My experience includes integrating complex payment APIs — PayPal, Chpter, M-Pesa — and delivering high-performance solutions aligned with business needs.
-                </p>
-
-                <div class="grid grid-cols-3 gap-4">
-                    <div class="rounded-2xl p-5 text-center border-2" style="background:white;border-color:#F5C800;">
-                        <div class="font-syne text-3xl font-bold mb-1" style="color:#F5C800;">3+</div>
-                        <div class="text-sm font-medium" style="color:#8A7A60;">Years</div>
-                    </div>
-                    <div class="rounded-2xl p-5 text-center border-2" style="background:white;border-color:#FF3E8A;">
-                        <div class="font-syne text-3xl font-bold mb-1" style="color:#FF3E8A;">10+</div>
-                        <div class="text-sm font-medium" style="color:#8A7A60;">Projects</div>
-                    </div>
-                    <div class="rounded-2xl p-5 text-center border-2" style="background:white;border-color:#00B87C;">
-                        <div class="font-syne text-3xl font-bold mb-1" style="color:#00B87C;">3</div>
-                        <div class="text-sm font-medium" style="color:#8A7A60;">APIs</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="space-y-5">
-                <h3 class="font-syne text-xl font-semibold mb-6" style="color:#1A1408;">Technical Skills</h3>
-                {% for skill, pct in skills %}
-                <div>
-                    <div class="flex justify-between mb-2">
-                        <span class="text-sm font-medium" style="color:#5A5040;">{{ skill }}</span>
-                        <span class="text-sm font-bold" style="color:#FF3E8A;">{{ pct }}%</span>
-                    </div>
-                    <div class="h-2 rounded-full overflow-hidden" style="background:rgba(26,20,8,0.08);">
-                        <div class="skill-bar h-full rounded-full" style="width:{{ pct }}%;background:linear-gradient(90deg,#FF3E8A,#F5C800);"></div>
-                    </div>
-                </div>
-                {% empty %}
-                <div>
-                    <div class="flex justify-between mb-2"><span class="text-sm font-medium" style="color:#5A5040;">PHP & Laravel</span><span class="text-sm font-bold" style="color:#FF3E8A;">90%</span></div>
-                    <div class="h-2 rounded-full overflow-hidden" style="background:rgba(26,20,8,0.08);"><div class="skill-bar h-full rounded-full" style="width:90%;background:linear-gradient(90deg,#FF3E8A,#F5C800);"></div></div>
-                </div>
-                <div>
-                    <div class="flex justify-between mb-2"><span class="text-sm font-medium" style="color:#5A5040;">Python & Django</span><span class="text-sm font-bold" style="color:#FF3E8A;">85%</span></div>
-                    <div class="h-2 rounded-full overflow-hidden" style="background:rgba(26,20,8,0.08);"><div class="skill-bar h-full rounded-full" style="width:85%;background:linear-gradient(90deg,#FF3E8A,#F5C800);"></div></div>
-                </div>
-                <div>
-                    <div class="flex justify-between mb-2"><span class="text-sm font-medium" style="color:#5A5040;">JavaScript & React</span><span class="text-sm font-bold" style="color:#FF3E8A;">80%</span></div>
-                    <div class="h-2 rounded-full overflow-hidden" style="background:rgba(26,20,8,0.08);"><div class="skill-bar h-full rounded-full" style="width:80%;background:linear-gradient(90deg,#FF3E8A,#F5C800);"></div></div>
-                </div>
-                <div>
-                    <div class="flex justify-between mb-2"><span class="text-sm font-medium" style="color:#5A5040;">MySQL & Databases</span><span class="text-sm font-bold" style="color:#FF3E8A;">85%</span></div>
-                    <div class="h-2 rounded-full overflow-hidden" style="background:rgba(26,20,8,0.08);"><div class="skill-bar h-full rounded-full" style="width:85%;background:linear-gradient(90deg,#FF3E8A,#F5C800);"></div></div>
-                </div>
-                <div>
-                    <div class="flex justify-between mb-2"><span class="text-sm font-medium" style="color:#5A5040;">Machine Learning</span><span class="text-sm font-bold" style="color:#FF3E8A;">75%</span></div>
-                    <div class="h-2 rounded-full overflow-hidden" style="background:rgba(26,20,8,0.08);"><div class="skill-bar h-full rounded-full" style="width:75%;background:linear-gradient(90deg,#FF3E8A,#F5C800);"></div></div>
-                </div>
-                <div>
-                    <div class="flex justify-between mb-2"><span class="text-sm font-medium" style="color:#5A5040;">DevOps & Linux (Proxmox)</span><span class="text-sm font-bold" style="color:#FF3E8A;">78%</span></div>
-                    <div class="h-2 rounded-full overflow-hidden" style="background:rgba(26,20,8,0.08);"><div class="skill-bar h-full rounded-full" style="width:78%;background:linear-gradient(90deg,#FF3E8A,#F5C800);"></div></div>
-                </div>
-                {% endfor %}
-            </div>
+        <div class="stat-card">
+          <div class="stat-card-num">10+</div>
+          <div class="stat-card-label">Projects</div>
         </div>
+        <div class="stat-card">
+          <div class="stat-card-num">3</div>
+          <div class="stat-card-label">APIs</div>
+        </div>
+      </div>
     </div>
+
+    <!-- Right: skills -->
+    <div class="skills-section">
+      <h3>Technical Skills</h3>
+
+      {% for skill, pct in skills %}
+      <div class="skill-item">
+        <div class="skill-header">
+          <span class="skill-name">{{ skill }}</span>
+          <span class="skill-pct">{{ pct }}%</span>
+        </div>
+        <div class="skill-track">
+          <div class="skill-bar" style="width: {{ pct }}%;"></div>
+        </div>
+      </div>
+      {% empty %}
+      <p>No skills available at the moment.</p>
+      {% endfor %}
+    </div>
+  </div>
 </section>

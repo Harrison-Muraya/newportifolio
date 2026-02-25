@@ -1,86 +1,82 @@
 {% load static %}
-<section id="gallery" class="py-32 relative section-reveal" style="background:#FDFCF8;">
-    <div class="max-w-7xl mx-auto px-6 lg:px-8">
-        <div class="flex flex-wrap justify-between items-end mb-16 gap-6">
-            <div>
-                <span class="section-label">Gallery</span>
-                <h2 class="font-syne text-4xl md:text-5xl font-bold mt-3" style="color:#1A1408;">My Work</h2>
-            </div>
-            {% if request.user.is_superuser %}
-            <button onclick="openUploadModal()" class="px-5 py-2.5 rounded-full text-sm font-semibold flex items-center gap-2 transition hover:scale-105 border-2" style="background:#FFF3A3;border-color:#F5C800;color:#1A1408;">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                Upload Image
-            </button>
-            {% endif %}
-        </div>
+<section id="gallery" class="section-reveal">
+  <div class="gallery-inner">
+    <span class="section-label">Gallery</span>
+    <h2 class="section-title">My Work</h2>
 
-        <!-- Filter -->
-        <div class="flex flex-wrap gap-3 mb-10">
-            <button class="gallery-filter active px-5 py-2 rounded-full text-sm font-medium transition" data-filter="all">All</button>
-            <button class="gallery-filter px-5 py-2 rounded-full text-sm font-medium transition" data-filter="projects">Projects</button>
-            <button class="gallery-filter px-5 py-2 rounded-full text-sm font-medium transition" data-filter="workspace">Workspace</button>
-            <button class="gallery-filter px-5 py-2 rounded-full text-sm font-medium transition" data-filter="team">Team & Events</button>
-        </div>
-
-        <!-- Auth hint -->
-        {% if not request.user.is_authenticated %}
-        <div class="mb-8 p-4 rounded-2xl flex items-center gap-3 border-2" style="background:#FFF3A3;border-color:#F5C800;">
-            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="#C9A000" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <p class="text-sm font-medium" style="color:#5A5040;"><a href="/login/" class="underline font-bold" style="color:#FF3E8A;">Sign in</a> to like and comment on images.</p>
-        </div>
-        {% endif %}
-
-        <!-- Gallery Grid -->
-        <div id="galleryGrid" class="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
-            {% for img in gallery_images %}
-            <div class="gallery-item break-inside-avoid cursor-pointer rounded-2xl overflow-hidden relative group border-2 transition hover:shadow-xl" 
-                 data-category="{{ img.category }}" 
-                 data-id="{{ img.id }}"
-                 style="border-color:rgba(26,20,8,0.08);"
-                 onclick="openViewer({{ img.id }})">
-                <img src="{{ img.image.url }}" alt="{{ img.title }}" class="w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
-                <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300" style="background:linear-gradient(to top,rgba(26,20,8,0.75),transparent);">
-                    <div class="absolute bottom-4 left-4 right-4">
-                        <p class="font-syne font-bold text-white text-sm">{{ img.title }}</p>
-                        <div class="flex items-center gap-3 mt-1 text-white/80 text-xs">
-                            <span class="flex items-center gap-1">❤️ {{ img.like_count }}</span>
-                            <span class="flex items-center gap-1">💬 {{ img.comment_count }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% empty %}
-            <div class="gallery-item break-inside-avoid cursor-pointer rounded-2xl overflow-hidden relative group border-2" data-category="projects" data-id="placeholder" style="border-color:rgba(26,20,8,0.08);" onclick="alert('Gallery images will appear here once uploaded.')">
-                <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=450&fit=crop" alt="Web Development" class="w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
-                <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300" style="background:linear-gradient(to top,rgba(26,20,8,0.75),transparent);">
-                    <div class="absolute bottom-4 left-4"><p class="font-syne font-bold text-white text-sm">Web Development</p></div>
-                </div>
-            </div>
-            <div class="gallery-item break-inside-avoid cursor-pointer rounded-2xl overflow-hidden relative group border-2" data-category="workspace" data-id="placeholder" style="border-color:rgba(26,20,8,0.08);">
-                <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=700&fit=crop" alt="Dev Setup" class="w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
-                <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300" style="background:linear-gradient(to top,rgba(26,20,8,0.75),transparent);">
-                    <div class="absolute bottom-4 left-4"><p class="font-syne font-bold text-white text-sm">Dev Setup</p></div>
-                </div>
-            </div>
-            <div class="gallery-item break-inside-avoid cursor-pointer rounded-2xl overflow-hidden relative group border-2" data-category="projects" data-id="placeholder" style="border-color:rgba(26,20,8,0.08);">
-                <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&h=400&fit=crop" alt="Backend Work" class="w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
-                <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300" style="background:linear-gradient(to top,rgba(26,20,8,0.75),transparent);">
-                    <div class="absolute bottom-4 left-4"><p class="font-syne font-bold text-white text-sm">Backend Development</p></div>
-                </div>
-            </div>
-            <div class="gallery-item break-inside-avoid cursor-pointer rounded-2xl overflow-hidden relative group border-2" data-category="team" data-id="placeholder" style="border-color:rgba(26,20,8,0.08);">
-                <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=450&fit=crop" alt="Team" class="w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
-                <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300" style="background:linear-gradient(to top,rgba(26,20,8,0.75),transparent);">
-                    <div class="absolute bottom-4 left-4"><p class="font-syne font-bold text-white text-sm">Team Work</p></div>
-                </div>
-            </div>
-            <div class="gallery-item break-inside-avoid cursor-pointer rounded-2xl overflow-hidden relative group border-2" data-category="workspace" data-id="placeholder" style="border-color:rgba(26,20,8,0.08);">
-                <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&h=500&fit=crop" alt="Coding" class="w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
-                <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300" style="background:linear-gradient(to top,rgba(26,20,8,0.75),transparent);">
-                    <div class="absolute bottom-4 left-4"><p class="font-syne font-bold text-white text-sm">Coding Session</p></div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
+    <div class="gallery-toolbar">
+      <div class="gallery-filters">
+        <button class="gallery-filter active" data-filter="all">All</button>
+        <button class="gallery-filter" data-filter="projects">Projects</button>
+        <button class="gallery-filter" data-filter="workspace">Workspace</button>
+        <button class="gallery-filter" data-filter="team">Team &amp; Events</button>
+      </div>
+      {% if request.user.is_superuser %}
+      <button onclick="openUploadModal()" class="btn-upload-gallery">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        Upload Image
+      </button>
+      {% endif %}
     </div>
+
+    {% if not request.user.is_authenticated %}
+    <p class="gallery-hint">
+      <a href="/login/">Sign in</a> to like and comment on images.
+    </p>
+    {% endif %}
+
+    <div id="galleryGrid" class="gallery-grid">
+      {% for img in gallery_images %}
+      <div class="gallery-item"
+           data-category="{{ img.category }}"
+           data-id="{{ img.id }}"
+           onclick="openViewer({{ img.id }})">
+        <img src="{{ img.image.url }}" alt="{{ img.title }}" loading="lazy">
+        <div class="gallery-overlay">
+          <div>
+            <div class="gallery-overlay-title">{{ img.title }}</div>
+            <div class="gallery-overlay-meta">
+              <span>♥ {{ img.like_count }}</span>
+              <span>💬 {{ img.comment_count }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <!-- Placeholder images when no gallery images uploaded yet -->
+      <div class="gallery-item" data-category="projects" data-id="placeholder">
+        <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=450&fit=crop" alt="Web Development" loading="lazy">
+        <div class="gallery-overlay">
+          <div><div class="gallery-overlay-title">Web Development</div></div>
+        </div>
+      </div>
+      <div class="gallery-item" data-category="workspace" data-id="placeholder">
+        <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=700&fit=crop" alt="Dev Setup" loading="lazy">
+        <div class="gallery-overlay">
+          <div><div class="gallery-overlay-title">Dev Setup</div></div>
+        </div>
+      </div>
+      <div class="gallery-item" data-category="projects" data-id="placeholder">
+        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&h=400&fit=crop" alt="Backend Work" loading="lazy">
+        <div class="gallery-overlay">
+          <div><div class="gallery-overlay-title">Backend Development</div></div>
+        </div>
+      </div>
+      <div class="gallery-item" data-category="team" data-id="placeholder">
+        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=450&fit=crop" alt="Team" loading="lazy">
+        <div class="gallery-overlay">
+          <div><div class="gallery-overlay-title">Team Work</div></div>
+        </div>
+      </div>
+      <div class="gallery-item" data-category="workspace" data-id="placeholder">
+        <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&h=500&fit=crop" alt="Coding" loading="lazy">
+        <div class="gallery-overlay">
+          <div><div class="gallery-overlay-title">Coding Session</div></div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
 </section>

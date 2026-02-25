@@ -13,7 +13,17 @@ import json
 def home(request):
     gallery_images = GalleryImage.objects.all()
     projects = Project.objects.all()
-    return render(request, 'harrison/home.html', {'gallery_images': gallery_images, 'projects': projects})
+
+    skills = [
+        ("PHP & Laravel", 90),
+        ("Python & Django", 85),
+        ("JavaScript & React", 80),
+        ("MySQL & Databases", 85),
+        ("Machine Learning", 75),
+        ("DevOps & Linux", 78),
+    ]
+
+    return render(request, 'harrison/home.html', {'gallery_images': gallery_images, 'projects': projects, "skills": skills})
 
 
 def login_view(request):

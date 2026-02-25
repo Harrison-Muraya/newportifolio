@@ -1,32 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Harrison Muraya — Software Developer</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{% static 'harrison/css/style.css' %}">
-    <style>
-        /* Tailwind color overrides for bright theme */
-        .bg-page { background-color: #FDFCF8; }
-        .text-ink { color: #1A1408; }
-        .text-muted { color: #5A5040; }
-        .text-faint { color: #B0A890; }
-    </style>
+  {% load static %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Harrison Muraya — Software Developer</title>
+  <meta name="description" content="Full-Stack Software Developer based in Nairobi, Kenya. Specialising in Laravel, Django, React, and payment integrations.">
+
+  <!-- Fonts: Fraunces (display/serif) + Outfit (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{% static 'harrison/css/style.css' %}">
 </head>
-<body style="background:#FDFCF8; color:#1A1408;" class="overflow-x-hidden">
+<body>
+  {% block content %}{% endblock %}
 
-    {% block content %}{% endblock %}
-
-    <script>
-        const CSRF_TOKEN = "{{ csrf_token }}";
-        const IS_AUTHENTICATED = {{ request.user.is_authenticated|yesno:"true,false" }};
-        const IS_SUPERUSER = {{ request.user.is_superuser|yesno:"true,false" }};
-        const USERNAME = "{{ request.user.username|default:'' }}";
-    </script>
-    <script src="{% static 'harrison/js/base.js' %}"></script>
+  <script>
+    const CSRF_TOKEN = "{{ csrf_token }}";
+    const IS_AUTHENTICATED = {{ request.user.is_authenticated|yesno:"true,false" }};
+    const IS_SUPERUSER = {{ request.user.is_superuser|yesno:"true,false" }};
+    const USERNAME = "{{ request.user.username|default:'' }}";
+  </script>
+  <script src="{% static 'harrison/js/base.js' %}"></script>
 </body>
 </html>

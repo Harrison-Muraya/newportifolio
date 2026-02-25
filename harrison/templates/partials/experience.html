@@ -1,85 +1,56 @@
 {% load static %}
-<section id="experience" class="py-32 relative section-reveal" style="background:#F5F3EC;">
-    <div class="max-w-7xl mx-auto px-6 lg:px-8">
-        <div class="mb-16">
-            <span class="section-label">Career</span>
-            <h2 class="font-syne text-4xl md:text-5xl font-bold mt-3" style="color:#1A1408;">Experience</h2>
+<section id="experience" class="section-reveal">
+  <div class="exp-inner">
+    <span class="section-label">Career</span>
+    <h2 class="section-title">Experience</h2>
+
+    <div class="exp-grid">
+
+      <div class="exp-card">
+        <div class="exp-header">
+          <div>
+            <div class="exp-title">Software Developer</div>
+            <div class="exp-company">Smart Web Kenya</div>
+          </div>
+          <span class="exp-date">Jan 2025 – Sep 2025</span>
         </div>
+        <ul class="exp-bullets">
+          <li>Integrated online payment solutions via PayPal, Chpter, and M-Pesa APIs</li>
+          <li>Designed and optimised payout workflows ensuring seamless fund transfers</li>
+          <li>Built dynamic web applications with Laravel & Livewire</li>
+        </ul>
+      </div>
 
-        <div class="relative">
-            <!-- Timeline line -->
-            <div class="absolute left-6 top-0 bottom-0 w-0.5 hidden md:block" style="background:linear-gradient(to bottom,#FF3E8A,#F5C800,transparent);"></div>
-
-            <div class="space-y-10">
-                <!-- Job 1 -->
-                <div class="relative flex gap-10 group">
-                    <div class="hidden md:flex flex-col items-center">
-                        <div class="w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-10 flex-shrink-0" style="background:linear-gradient(135deg,#FF3E8A,#F5C800);box-shadow:0 6px 20px rgba(255,62,138,0.3);">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                        </div>
-                    </div>
-                    <div class="flex-1 rounded-2xl p-8 border-2 transition-all duration-300 hover:shadow-lg group-hover:border-pink-300" style="background:white;border-color:rgba(26,20,8,0.08);">
-                        <div class="flex flex-wrap justify-between items-start mb-4">
-                            <div>
-                                <h3 class="font-syne text-xl font-bold" style="color:#1A1408;">Software Developer</h3>
-                                <p class="font-semibold" style="color:#FF3E8A;">Smart Web Kenya</p>
-                            </div>
-                            <span class="text-sm rounded-full px-3 py-1 font-medium" style="background:#FFD6E8;color:#C4005D;">Jan 2025 – Sep 2025</span>
-                        </div>
-                        <ul class="space-y-2" style="color:#5A5040;">
-                            <li class="flex gap-2"><span style="color:#FF3E8A;">▸</span> Integrated online payment solutions via PayPal, Chpter, and M-Pesa APIs</li>
-                            <li class="flex gap-2"><span style="color:#FF3E8A;">▸</span> Designed and optimized payout workflows ensuring seamless fund transfers</li>
-                            <li class="flex gap-2"><span style="color:#FF3E8A;">▸</span> Built dynamic web apps with Laravel & Livewire</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Job 2 -->
-                <div class="relative flex gap-10 group">
-                    <div class="hidden md:flex flex-col items-center">
-                        <div class="w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-10 flex-shrink-0" style="background:linear-gradient(135deg,#F5C800,#FFE066);box-shadow:0 6px 20px rgba(245,200,0,0.3);">
-                            <svg class="w-5 h-5" fill="none" stroke="#1A1408" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                        </div>
-                    </div>
-                    <div class="flex-1 rounded-2xl p-8 border-2 transition-all duration-300 hover:shadow-lg group-hover:border-yellow-300" style="background:white;border-color:rgba(26,20,8,0.08);">
-                        <div class="flex flex-wrap justify-between items-start mb-4">
-                            <div>
-                                <h3 class="font-syne text-xl font-bold" style="color:#1A1408;">Software Developer Intern</h3>
-                                <p class="font-semibold" style="color:#C9A000;">Quest Website Developers Ltd</p>
-                            </div>
-                            <span class="text-sm rounded-full px-3 py-1 font-medium" style="background:#FFF3A3;color:#C9A000;">Jul 2024 – Jan 2025</span>
-                        </div>
-                        <ul class="space-y-2" style="color:#5A5040;">
-                            <li class="flex gap-2"><span style="color:#C9A000;">▸</span> Developed machine learning models for data analysis</li>
-                            <li class="flex gap-2"><span style="color:#C9A000;">▸</span> Built and deployed projects using PHP, Laravel, and Livewire</li>
-                            <li class="flex gap-2"><span style="color:#C9A000;">▸</span> Created responsive web themes with Tailwind CSS and Bootstrap</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Job 3 -->
-                <div class="relative flex gap-10 group">
-                    <div class="hidden md:flex flex-col items-center">
-                        <div class="w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-10 flex-shrink-0" style="background:linear-gradient(135deg,#00B87C,#66F5C8);box-shadow:0 6px 20px rgba(0,184,124,0.3);">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"/></svg>
-                        </div>
-                    </div>
-                    <div class="flex-1 rounded-2xl p-8 border-2 transition-all duration-300 hover:shadow-lg group-hover:border-green-300" style="background:white;border-color:rgba(26,20,8,0.08);">
-                        <div class="flex flex-wrap justify-between items-start mb-4">
-                            <div>
-                                <h3 class="font-syne text-xl font-bold" style="color:#1A1408;">ICT & Network Admin</h3>
-                                <p class="font-semibold" style="color:#007A52;">Estream East Africa Ltd</p>
-                            </div>
-                            <span class="text-sm rounded-full px-3 py-1 font-medium" style="background:#C8F5E5;color:#007A52;">Oct 2023 – Jul 2024</span>
-                        </div>
-                        <ul class="space-y-2" style="color:#5A5040;">
-                            <li class="flex gap-2"><span style="color:#00B87C;">▸</span> Provided IT and network support, troubleshot systems</li>
-                            <li class="flex gap-2"><span style="color:#00B87C;">▸</span> Managed cabling and network setups</li>
-                            <li class="flex gap-2"><span style="color:#00B87C;">▸</span> Built websites with WordPress and managed server infrastructure</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+      <div class="exp-card">
+        <div class="exp-header">
+          <div>
+            <div class="exp-title">Software Developer Intern</div>
+            <div class="exp-company">Quest Website Developers Ltd</div>
+          </div>
+          <span class="exp-date">Jul 2024 – Jan 2025</span>
         </div>
+        <ul class="exp-bullets">
+          <li>Developed machine learning models for data analysis</li>
+          <li>Built and deployed projects using PHP, Laravel, and Livewire</li>
+          <li>Created responsive web themes with Tailwind CSS and Bootstrap</li>
+        </ul>
+      </div>
+
+      <div class="exp-card">
+        <div class="exp-header">
+          <div>
+            <div class="exp-title">ICT & Network Admin</div>
+            <div class="exp-company">Estream East Africa Ltd</div>
+          </div>
+          <span class="exp-date">Oct 2023 – Jul 2024</span>
+        </div>
+        <ul class="exp-bullets">
+          <li>Provided IT and network support, troubleshot systems across the organisation</li>
+          <li>Managed cabling and network setups for new installations</li>
+          <li>Built websites with WordPress and managed server infrastructure</li>
+        </ul>
+      </div>
+
     </div>
+  </div>
 </section>
