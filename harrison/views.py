@@ -199,6 +199,7 @@ def upload_project_bg(request, project_id):
     project = get_object_or_404(Project, id=project_id)
     
     if request.method == 'POST':
+        print("END POINT IS BEING HIT: ",request.FILES)
         bg_image = request.FILES.get('bg_image')
         if bg_image:
             project.bg_image = bg_image
