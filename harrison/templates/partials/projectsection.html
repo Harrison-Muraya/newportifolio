@@ -1,93 +1,222 @@
 {% load static %}
-<section id="projects" class="py-32 relative section-reveal">
-    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-fuchsia-950/10 to-transparent pointer-events-none"></div>
+<section id="projects" class="py-32 relative section-reveal" style="background:#FDFCF8;">
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
         <div class="mb-16">
-            <span class="text-violet-400 font-medium text-sm tracking-widest uppercase">Portfolio</span>
-            <h2 class="font-syne text-4xl md:text-5xl font-bold text-white mt-3">Featured Projects</h2>
+            <span class="section-label">Portfolio</span>
+            <h2 class="font-syne text-4xl md:text-5xl font-bold mt-3" style="color:#1A1408;">Featured Projects</h2>
         </div>
 
         <div class="grid md:grid-cols-2 gap-6">
-            <!-- Project 1 -->
-            <div class="group bg-white/[0.03] border border-white/[0.07] rounded-3xl overflow-hidden hover:border-violet-500/40 transition-all duration-300 hover:bg-white/[0.05]">
-                <div class="h-2 bg-gradient-to-r from-violet-600 to-fuchsia-600"></div>
-                <div class="p-8">
-                    <div class="w-14 h-14 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-5 group-hover:scale-110 transition">
-                        <svg class="w-7 h-7 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
-                    </div>
-                    <h3 class="font-syne text-xl font-bold text-white mb-3">Domain Management Platform</h3>
-                    <p class="text-white/50 mb-5 leading-relaxed">A Laravel-based platform replicating key features of Hover.com, featuring responsive UI with Livewire and real-time components built with Alpine.js and Tailwind CSS.</p>
+            {% if projects %}
+            {% for project in projects %}
+            <div class="group rounded-3xl overflow-hidden border-2 transition-all duration-300 hover:shadow-xl relative" 
+                 style="background:white;border-color:rgba(26,20,8,0.10);{% if project.bg_image %}background-image:url('{{ project.bg_image.url }}');background-size:cover;background-position:center;{% endif %}">
+                {% if project.bg_image %}
+                <!-- Overlay for readability when bg image present -->
+                <div class="absolute inset-0 rounded-3xl" style="background:rgba(253,252,248,0.88);backdrop-filter:blur(2px);"></div>
+                {% endif %}
+                
+                {% if request.user.is_superuser %}
+                <button class="project-bg-upload-btn" onclick="triggerProjectBgUpload({{ project.id }})">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    {% if project.bg_image %}Change BG{% else %}Set BG Image{% endif %}
+                </button>
+                {% endif %}
+
+                <div class="h-2 relative z-10 accent-strip project-card-{{ project.color }}"></div>
+                <div class="p-8 relative z-10">
+                    <h3 class="font-syne text-xl font-bold mb-3" style="color:#1A1408;">{{ project.title }}</h3>
+                    <p class="mb-5 leading-relaxed" style="color:#5A5040;">{{ project.description }}</p>
                     <div class="flex flex-wrap gap-2 mb-6">
-                        <span class="px-3 py-1 bg-violet-500/10 text-violet-300 border border-violet-500/20 rounded-full text-xs font-medium">Laravel</span>
-                        <span class="px-3 py-1 bg-blue-500/10 text-blue-300 border border-blue-500/20 rounded-full text-xs font-medium">Livewire</span>
-                        <span class="px-3 py-1 bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 rounded-full text-xs font-medium">Tailwind</span>
-                        <span class="px-3 py-1 bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 rounded-full text-xs font-medium">Alpine.js</span>
+                        {% for tag in project.get_tags_list %}
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold tag-gray">{{ tag }}</span>
+                        {% endfor %}
                     </div>
-                    <a href="http://197.248.201.233:10000/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-violet-400 hover:text-violet-300 font-medium text-sm transition">
+                    {% if project.url %}
+                    <a href="{{ project.url }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 font-semibold text-sm transition hover:gap-3" style="color:#FF3E8A;">
+                        {{ project.url_label }} <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+
+            {% else %}
+            <!-- Static fallback project cards -->
+
+            <!-- Project 1 -->
+            <div class="group rounded-3xl overflow-hidden border-2 transition-all duration-300 hover:shadow-xl relative" style="background:white;border-color:rgba(26,20,8,0.10);" id="project-static-1">
+                {% if request.user.is_superuser %}
+                <button class="project-bg-upload-btn" onclick="triggerStaticProjectBgUpload('project-static-1')">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    Set BG Image
+                </button>
+                {% endif %}
+                <div class="h-2 accent-strip" style="background:linear-gradient(90deg,#FF3E8A,#F5C800);"></div>
+                <div class="p-8 relative z-10">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition" style="background:#FFD6E8;border:1.5px solid #FF3E8A;">
+                        <svg class="w-7 h-7" fill="none" stroke="#FF3E8A" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
+                    </div>
+                    <h3 class="font-syne text-xl font-bold mb-3" style="color:#1A1408;">Domain Management Platform</h3>
+                    <p class="mb-5 leading-relaxed" style="color:#5A5040;">A Laravel-based platform replicating key features of Hover.com, featuring responsive UI with Livewire and real-time components built with Alpine.js and Tailwind CSS.</p>
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold tag-pink">Laravel</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold tag-blue">Livewire</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold tag-gray">Tailwind</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold tag-gray">Alpine.js</span>
+                    </div>
+                    <a href="http://197.248.201.233:10000/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 font-semibold text-sm transition hover:gap-3" style="color:#FF3E8A;">
                         View Project <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                     </a>
                 </div>
             </div>
 
             <!-- Project 2 -->
-            <div class="group bg-white/[0.03] border border-white/[0.07] rounded-3xl overflow-hidden hover:border-blue-500/40 transition-all duration-300 hover:bg-white/[0.05]">
-                <div class="h-2 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
-                <div class="p-8">
-                    <div class="w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-5 group-hover:scale-110 transition">
-                        <svg class="w-7 h-7 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+            <div class="group rounded-3xl overflow-hidden border-2 transition-all duration-300 hover:shadow-xl relative" style="background:white;border-color:rgba(26,20,8,0.10);" id="project-static-2">
+                {% if request.user.is_superuser %}
+                <button class="project-bg-upload-btn" onclick="triggerStaticProjectBgUpload('project-static-2')">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    Set BG Image
+                </button>
+                {% endif %}
+                <div class="h-2" style="background:linear-gradient(90deg,#F5C800,#FFE066);"></div>
+                <div class="p-8 relative z-10">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition" style="background:#FFF3A3;border:1.5px solid #F5C800;">
+                        <svg class="w-7 h-7" fill="none" stroke="#C9A000" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
                     </div>
-                    <h3 class="font-syne text-xl font-bold text-white mb-3">Blockchain Web Application</h3>
-                    <p class="text-white/50 mb-5 leading-relaxed">A secure transaction platform developed with Python and Django, featuring smart contract functionality and data immutability for enhanced security and transparency.</p>
+                    <h3 class="font-syne text-xl font-bold mb-3" style="color:#1A1408;">Blockchain Web Application</h3>
+                    <p class="mb-5 leading-relaxed" style="color:#5A5040;">A secure transaction platform developed with Python and Django, featuring smart contract functionality and data immutability for enhanced security and transparency.</p>
                     <div class="flex flex-wrap gap-2 mb-6">
-                        <span class="px-3 py-1 bg-blue-500/10 text-blue-300 border border-blue-500/20 rounded-full text-xs font-medium">Python</span>
-                        <span class="px-3 py-1 bg-green-500/10 text-green-300 border border-green-500/20 rounded-full text-xs font-medium">Django</span>
-                        <span class="px-3 py-1 bg-purple-500/10 text-purple-300 border border-purple-500/20 rounded-full text-xs font-medium">Blockchain</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold tag-yellow">Python</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold tag-green">Django</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold tag-gray">Blockchain</span>
                     </div>
-                    <a href="http://197.248.201.233:20000/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-medium text-sm transition">
+                    <a href="http://197.248.201.233:20000/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 font-semibold text-sm transition hover:gap-3" style="color:#C9A000;">
                         View Project <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                     </a>
                 </div>
             </div>
 
             <!-- Project 3 -->
-            <div class="group bg-white/[0.03] border border-white/[0.07] rounded-3xl overflow-hidden hover:border-emerald-500/40 transition-all duration-300 hover:bg-white/[0.05]">
-                <div class="h-2 bg-gradient-to-r from-emerald-600 to-teal-600"></div>
-                <div class="p-8">
-                    <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-5 group-hover:scale-110 transition">
-                        <svg class="w-7 h-7 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <div class="group rounded-3xl overflow-hidden border-2 transition-all duration-300 hover:shadow-xl relative" style="background:white;border-color:rgba(26,20,8,0.10);" id="project-static-3">
+                {% if request.user.is_superuser %}
+                <button class="project-bg-upload-btn" onclick="triggerStaticProjectBgUpload('project-static-3')">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    Set BG Image
+                </button>
+                {% endif %}
+                <div class="h-2" style="background:linear-gradient(90deg,#00B87C,#66F5C8);"></div>
+                <div class="p-8 relative z-10">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition" style="background:#C8F5E5;border:1.5px solid #00B87C;">
+                        <svg class="w-7 h-7" fill="none" stroke="#007A52" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     </div>
-                    <h3 class="font-syne text-xl font-bold text-white mb-3">API Platform & Docs</h3>
-                    <p class="text-white/50 mb-5 leading-relaxed">A comprehensive REST API platform with auto-generated Swagger documentation. Built with Python and FastAPI, featuring authentication, rate limiting, and full OpenAPI spec.</p>
+                    <h3 class="font-syne text-xl font-bold mb-3" style="color:#1A1408;">API Platform & Docs</h3>
+                    <p class="mb-5 leading-relaxed" style="color:#5A5040;">A comprehensive REST API platform with auto-generated Swagger documentation. Built with Python and FastAPI, featuring authentication, rate limiting, and full OpenAPI spec.</p>
                     <div class="flex flex-wrap gap-2 mb-6">
-                        <span class="px-3 py-1 bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 rounded-full text-xs font-medium">FastAPI</span>
-                        <span class="px-3 py-1 bg-yellow-500/10 text-yellow-300 border border-yellow-500/20 rounded-full text-xs font-medium">OpenAPI</span>
-                        <span class="px-3 py-1 bg-orange-500/10 text-orange-300 border border-orange-500/20 rounded-full text-xs font-medium">Python</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold tag-green">FastAPI</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold tag-yellow">OpenAPI</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold tag-gray">Python</span>
                     </div>
-                    <a href="http://197.248.201.233:30000/docs" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-medium text-sm transition">
+                    <a href="http://197.248.201.233:30000/docs" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 font-semibold text-sm transition hover:gap-3" style="color:#00B87C;">
                         View Docs <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                     </a>
                 </div>
             </div>
 
             <!-- Project 4 -->
-            <div class="group bg-white/[0.03] border border-white/[0.07] rounded-3xl overflow-hidden hover:border-rose-500/40 transition-all duration-300 hover:bg-white/[0.05]">
-                <div class="h-2 bg-gradient-to-r from-rose-600 to-pink-600"></div>
-                <div class="p-8">
-                    <div class="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mb-5 group-hover:scale-110 transition">
-                        <svg class="w-7 h-7 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            <div class="group rounded-3xl overflow-hidden border-2 transition-all duration-300 hover:shadow-xl relative" style="background:white;border-color:rgba(26,20,8,0.10);" id="project-static-4">
+                {% if request.user.is_superuser %}
+                <button class="project-bg-upload-btn" onclick="triggerStaticProjectBgUpload('project-static-4')">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    Set BG Image
+                </button>
+                {% endif %}
+                <div class="h-2" style="background:linear-gradient(90deg,#4F8EF7,#7EC8F7);"></div>
+                <div class="p-8 relative z-10">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition" style="background:#D6E8FF;border:1.5px solid #4F8EF7;">
+                        <svg class="w-7 h-7" fill="none" stroke="#0050C8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"/></svg>
                     </div>
-                    <h3 class="font-syne text-xl font-bold text-white mb-3">Homeserver / Proxmox Cluster</h3>
-                    <p class="text-white/50 mb-5 leading-relaxed">A self-hosted Proxmox VE cluster managing multiple VMs and containers — running web servers, n8n automation, PostgreSQL, and VPS environments on bare metal.</p>
+                    <h3 class="font-syne text-xl font-bold mb-3" style="color:#1A1408;">Homeserver / Proxmox Cluster</h3>
+                    <p class="mb-5 leading-relaxed" style="color:#5A5040;">A self-hosted Proxmox VE cluster managing multiple VMs and containers — running web servers, n8n automation, PostgreSQL, and VPS environments on bare metal.</p>
                     <div class="flex flex-wrap gap-2 mb-6">
-                        <span class="px-3 py-1 bg-rose-500/10 text-rose-300 border border-rose-500/20 rounded-full text-xs font-medium">Proxmox</span>
-                        <span class="px-3 py-1 bg-pink-500/10 text-pink-300 border border-pink-500/20 rounded-full text-xs font-medium">Linux</span>
-                        <span class="px-3 py-1 bg-red-500/10 text-red-300 border border-red-500/20 rounded-full text-xs font-medium">DevOps</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold tag-blue">Proxmox</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold tag-gray">Linux</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold tag-gray">DevOps</span>
                     </div>
-                    <a href="http://197.248.201.233/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-rose-400 hover:text-rose-300 font-medium text-sm transition">
+                    <a href="http://197.248.201.233/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 font-semibold text-sm transition hover:gap-3" style="color:#4F8EF7;">
                         Visit <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                     </a>
                 </div>
             </div>
+            {% endif %}
         </div>
     </div>
+
+    <!-- Hidden file input for static project BG upload -->
+    {% if request.user.is_superuser %}
+    <input type="file" id="staticProjectBgInput" accept="image/*" class="hidden" onchange="applyStaticProjectBg(this)">
+    {% endif %}
 </section>
+
+<script>
+// For DB-backed projects
+function triggerProjectBgUpload(projectId) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async function() {
+        const file = this.files[0];
+        if (!file) return;
+        const formData = new FormData();
+        formData.append('bg_image', file);
+        const res = await fetch(`/project-bg/${projectId}/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': CSRF_TOKEN },
+            body: formData
+        });
+        const data = await res.json();
+        if (data.success) {
+            showToast('✅ Background image updated!');
+            setTimeout(() => location.reload(), 800);
+        } else {
+            showToast('❌ Upload failed');
+        }
+    };
+    input.click();
+}
+
+// For static (hardcoded) project cards — applies BG visually in the session
+let _staticBgTargetId = null;
+function triggerStaticProjectBgUpload(cardId) {
+    _staticBgTargetId = cardId;
+    document.getElementById('staticProjectBgInput').click();
+}
+function applyStaticProjectBg(input) {
+    const file = input.files[0];
+    if (!file || !_staticBgTargetId) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const card = document.getElementById(_staticBgTargetId);
+        if (card) {
+            card.style.backgroundImage = `url('${e.target.result}')`;
+            card.style.backgroundSize = 'cover';
+            card.style.backgroundPosition = 'center';
+            // Ensure content overlay exists
+            if (!card.querySelector('.bg-overlay')) {
+                const overlay = document.createElement('div');
+                overlay.className = 'bg-overlay absolute inset-0 rounded-3xl';
+                overlay.style.cssText = 'background:rgba(253,252,248,0.88);backdrop-filter:blur(2px);z-index:0;';
+                card.insertBefore(overlay, card.firstChild);
+            }
+            // Bump z-index on all children
+            card.querySelectorAll(':scope > *:not(.bg-overlay)').forEach(el => {
+                el.style.position = 'relative';
+                el.style.zIndex = '1';
+            });
+            showToast('✅ Background applied!');
+        }
+    };
+    reader.readAsDataURL(file);
+    input.value = '';
+}
+</script>

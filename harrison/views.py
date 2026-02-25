@@ -1,17 +1,19 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
-from .models import GalleryImage, ImageLike, ImageComment, ContactMessage
+from .models import GalleryImage, ImageLike, ImageComment, ContactMessage, Project
 import json
 
 
 def home(request):
     gallery_images = GalleryImage.objects.all()
-    return render(request, 'harrison/home.html', {'gallery_images': gallery_images})
+    projects = Project.objects.all()
+    return render(request, 'harrison/home.html', {'gallery_images': gallery_images, 'projects': projects})
 
 
 def login_view(request):
@@ -30,6 +32,41 @@ def login_view(request):
             messages.error(request, 'Invalid username or password.')
     
     return render(request, 'harrison/login.html')
+
+
+def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+    
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip()
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+        
+        if not username or not password1:
+            messages.error(request, 'Username and password are required.')
+        elif password1 != password2:
+            messages.error(request, 'Passwords do not match.')
+        elif len(password1) < 8:
+            messages.error(request, 'Password must be at least 8 characters.')
+        elif User.objects.filter(username=username).exists():
+            messages.error(request, 'Username already taken.')
+        else:
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password1,
+                first_name=first_name,
+                last_name=last_name,
+            )
+            login(request, user)
+            messages.success(request, f'Welcome, {user.get_full_name() or user.username}!')
+            return redirect('home')
+    
+    return render(request, 'harrison/register.html')
 
 
 def logout_view(request):
@@ -142,3 +179,21 @@ def send_message(request):
     
     msg.save()
     return JsonResponse({'success': True})
+
+
+@login_required
+def upload_project_bg(request, project_id):
+    if not request.user.is_superuser:
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+    
+    project = get_object_or_404(Project, id=project_id)
+    
+    if request.method == 'POST':
+        bg_image = request.FILES.get('bg_image')
+        if bg_image:
+            project.bg_image = bg_image
+            project.save()
+            return JsonResponse({'success': True, 'url': project.bg_image.url})
+        return JsonResponse({'error': 'No image provided'}, status=400)
+    
+    return JsonResponse({'error': 'Invalid method'}, status=405)

@@ -9,8 +9,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{% static 'harrison/css/style.css' %}">
+    <style>
+        /* Tailwind color overrides for bright theme */
+        .bg-page { background-color: #FDFCF8; }
+        .text-ink { color: #1A1408; }
+        .text-muted { color: #5A5040; }
+        .text-faint { color: #B0A890; }
+    </style>
 </head>
-<body class="bg-[#080810] text-white overflow-x-hidden">
+<body style="background:#FDFCF8; color:#1A1408;" class="overflow-x-hidden">
 
     {% block content %}{% endblock %}
 

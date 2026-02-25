@@ -78,3 +78,33 @@ class ContactMessage(models.Model):
         if self.sender:
             return self.sender.email
         return self.email or 'No email provided'
+
+
+class Project(models.Model):
+    """Represents a featured project card with optional background image"""
+    COLORS = [
+        ('violet', 'Violet'),
+        ('blue', 'Blue'),
+        ('emerald', 'Emerald'),
+        ('rose', 'Rose'),
+        ('yellow', 'Yellow'),
+        ('pink', 'Pink'),
+    ]
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    tags = models.CharField(max_length=500, help_text='Comma-separated tags e.g. Laravel,Livewire,Tailwind')
+    url = models.URLField(blank=True)
+    url_label = models.CharField(max_length=50, default='View Project')
+    color = models.CharField(max_length=20, choices=COLORS, default='violet')
+    bg_image = models.ImageField(upload_to='project_bgs/', blank=True, null=True)
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order', '-created_at']
+
+    def __str__(self):
+        return self.title
+
+    def get_tags_list(self):
+        return [t.strip() for t in self.tags.split(',') if t.strip()]

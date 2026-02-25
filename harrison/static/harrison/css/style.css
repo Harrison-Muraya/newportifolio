@@ -1,131 +1,110 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+from django.db import models
+from django.contrib.auth.models import User
+from django.utils import timezone
 
-* {
-    font-family: 'DM Sans', system-ui, sans-serif;
-    box-sizing: border-box;
-}
 
-.font-syne, h1, h2, h3, h4, nav .text-2xl {
-    font-family: 'Syne', sans-serif;
-}
+class GalleryImage(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    image = models.ImageField(upload_to='gallery/')
+    category = models.CharField(max_length=50, choices=[
+        ('projects', 'Projects'),
+        ('workspace', 'Workspace'),
+        ('team', 'Team & Events'),
+    ], default='projects')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='gallery_images')
 
-html {
-    scroll-behavior: smooth;
-}
+    class Meta:
+        ordering = ['-uploaded_at']
 
-body {
-    background-color: #080810;
-    -webkit-font-smoothing: antialiased;
-}
+    def __str__(self):
+        return self.title
 
-/* Navbar scroll state */
-#navbar.scrolled {
-    background: rgba(8, 8, 16, 0.85);
-    backdrop-filter: blur(24px);
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-}
+    def like_count(self):
+        return self.likes.count()
 
-/* Section reveals */
-.section-reveal {
-    opacity: 0;
-    transform: translateY(40px);
-    transition: opacity 0.8s ease, transform 0.8s ease;
-}
-.section-reveal.active {
-    opacity: 1;
-    transform: translateY(0);
-}
+    def comment_count(self):
+        return self.comments.count()
 
-/* Skill bars */
-.skill-bar {
-    width: 0;
-    transition: width 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
 
-/* Gallery filter buttons */
-.gallery-filter {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.08);
-    color: rgba(255,255,255,0.5);
-}
-.gallery-filter:hover {
-    background: rgba(255,255,255,0.08);
-    color: rgba(255,255,255,0.8);
-}
-.gallery-filter.active {
-    background: linear-gradient(135deg, #7c3aed, #c026d3);
-    border-color: transparent;
-    color: white;
-}
+class ImageLike(models.Model):
+    image = models.ForeignKey(GalleryImage, on_delete=models.CASCADE, related_name='likes')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-/* Hero animations */
-.hero-badge { animation: fadeInDown 0.6s ease forwards; opacity: 0; animation-delay: 0.1s; }
-.hero-title { animation: fadeInUp 0.7s ease forwards; opacity: 0; animation-delay: 0.2s; }
-.hero-sub { animation: fadeInUp 0.7s ease forwards; opacity: 0; animation-delay: 0.35s; }
-.hero-desc { animation: fadeInUp 0.7s ease forwards; opacity: 0; animation-delay: 0.45s; }
-.hero-cta { animation: fadeInUp 0.7s ease forwards; opacity: 0; animation-delay: 0.55s; }
-.hero-socials { animation: fadeInUp 0.7s ease forwards; opacity: 0; animation-delay: 0.65s; }
+    class Meta:
+        unique_together = ('image', 'user')
 
-@keyframes fadeInDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+    def __str__(self):
+        return f"{self.user.username} likes {self.image.title}"
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #0c0c18; }
-::-webkit-scrollbar-thumb { background: #3d2b6b; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #7c3aed; }
 
-/* Image viewer modal */
-#imageViewer.open {
-    display: flex !important;
-}
-#uploadModal.open {
-    display: flex !important;
-}
+class ImageComment(models.Model):
+    image = models.ForeignKey(GalleryImage, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
-/* Toast notification */
-.toast {
-    position: fixed;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%) translateY(10px);
-    background: rgba(124, 58, 237, 0.95);
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 50px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    z-index: 99999;
-    opacity: 0;
-    transition: all 0.3s ease;
-    pointer-events: none;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.15);
-}
-.toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-}
+    class Meta:
+        ordering = ['-created_at']
 
-/* Comment bubble */
-.comment-bubble {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 12px;
-    padding: 10px 12px;
-}
+    def __str__(self):
+        return f"{self.user.username}: {self.text[:50]}"
 
-/* Liked state */
-#likeBtn.liked {
-    color: #f43f5e;
-}
-#likeBtn.liked svg {
-    fill: #f43f5e;
-    stroke: #f43f5e;
-}
+
+class ContactMessage(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='sent_messages')
+    email = models.EmailField(blank=True, null=True)
+    name = models.CharField(max_length=100, blank=True)
+    message = models.TextField()
+    sent_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-sent_at']
+
+    def __str__(self):
+        return f"Message from {self.display_name} at {self.sent_at.strftime('%Y-%m-%d %H:%M')}"
+
+    @property
+    def display_name(self):
+        if self.sender:
+            return self.sender.get_full_name() or self.sender.username
+        return self.name or 'Anonymous'
+
+    @property
+    def display_email(self):
+        if self.sender:
+            return self.sender.email
+        return self.email or 'No email provided'
+
+
+class Project(models.Model):
+    """Represents a featured project card with optional background image"""
+    COLORS = [
+        ('violet', 'Violet'),
+        ('blue', 'Blue'),
+        ('emerald', 'Emerald'),
+        ('rose', 'Rose'),
+        ('yellow', 'Yellow'),
+        ('pink', 'Pink'),
+    ]
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    tags = models.CharField(max_length=500, help_text='Comma-separated tags e.g. Laravel,Livewire,Tailwind')
+    url = models.URLField(blank=True)
+    url_label = models.CharField(max_length=50, default='View Project')
+    color = models.CharField(max_length=20, choices=COLORS, default='violet')
+    bg_image = models.ImageField(upload_to='project_bgs/', blank=True, null=True)
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order', '-created_at']
+
+    def __str__(self):
+        return self.title
+
+    def get_tags_list(self):
+        return [t.strip() for t in self.tags.split(',') if t.strip()]

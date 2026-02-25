@@ -14,40 +14,40 @@
 
     <!-- Upload Modal (Admin only) -->
     {% if request.user.is_superuser %}
-    <div id="uploadModal" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/80 backdrop-blur-sm">
-        <div class="bg-[#12121e] border border-white/10 rounded-3xl p-8 w-full max-w-md mx-4 shadow-2xl">
-            <h3 class="font-syne text-2xl font-bold mb-6 text-white">Upload Image</h3>
+    <div id="uploadModal" class="fixed inset-0 z-[9999] hidden items-center justify-center" style="background:rgba(26,20,8,0.6);backdrop-filter:blur(8px);">
+        <div class="rounded-3xl p-8 w-full max-w-md mx-4 shadow-2xl border-2" style="background:white;border-color:rgba(26,20,8,0.10);">
+            <h3 class="font-syne text-2xl font-bold mb-6" style="color:#1A1408;">Upload Image</h3>
             <form id="uploadForm" enctype="multipart/form-data" class="space-y-4">
                 {% csrf_token %}
                 <div>
-                    <label class="text-sm text-white/60 block mb-2">Title</label>
-                    <input name="title" type="text" required placeholder="Image title..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-violet-500 transition">
+                    <label class="text-sm font-semibold block mb-2" style="color:#8A7A60;">Title</label>
+                    <input name="title" type="text" required placeholder="Image title..." class="w-full rounded-xl px-4 py-3 text-sm focus:outline-none transition" style="background:#F5F3EC;border:1.5px solid rgba(26,20,8,0.12);color:#1A1408;">
                 </div>
                 <div>
-                    <label class="text-sm text-white/60 block mb-2">Description</label>
-                    <textarea name="description" rows="2" placeholder="Brief description..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-violet-500 transition resize-none"></textarea>
+                    <label class="text-sm font-semibold block mb-2" style="color:#8A7A60;">Description</label>
+                    <textarea name="description" rows="2" placeholder="Brief description..." class="w-full rounded-xl px-4 py-3 text-sm focus:outline-none transition resize-none" style="background:#F5F3EC;border:1.5px solid rgba(26,20,8,0.12);color:#1A1408;"></textarea>
                 </div>
                 <div>
-                    <label class="text-sm text-white/60 block mb-2">Category</label>
-                    <select name="category" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-violet-500 transition">
+                    <label class="text-sm font-semibold block mb-2" style="color:#8A7A60;">Category</label>
+                    <select name="category" class="w-full rounded-xl px-4 py-3 text-sm focus:outline-none transition" style="background:#F5F3EC;border:1.5px solid rgba(26,20,8,0.12);color:#1A1408;">
                         <option value="projects">Projects</option>
                         <option value="workspace">Workspace</option>
                         <option value="team">Team & Events</option>
                     </select>
                 </div>
                 <div>
-                    <label class="text-sm text-white/60 block mb-2">Image File</label>
-                    <div id="dropZone" class="border-2 border-dashed border-white/20 rounded-xl p-6 text-center cursor-pointer hover:border-violet-500 transition">
+                    <label class="text-sm font-semibold block mb-2" style="color:#8A7A60;">Image File</label>
+                    <div id="dropZone" class="border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition" style="border-color:rgba(26,20,8,0.15);">
                         <div id="dropText">
-                            <svg class="w-8 h-8 mx-auto mb-2 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            <p class="text-white/40 text-sm">Drop image here or <span class="text-violet-400">click to browse</span></p>
+                            <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="#B0A890" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <p class="text-sm" style="color:#B0A890;">Drop image here or <span style="color:#FF3E8A;font-weight:600;">click to browse</span></p>
                         </div>
                         <input type="file" name="image" id="imageInput" accept="image/*" class="hidden" required>
                     </div>
                 </div>
                 <div class="flex gap-3 pt-2">
-                    <button type="button" onclick="closeUploadModal()" class="flex-1 py-3 rounded-xl border border-white/20 text-white/70 hover:bg-white/5 transition font-medium">Cancel</button>
-                    <button type="submit" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-semibold hover:opacity-90 transition">Upload</button>
+                    <button type="button" onclick="closeUploadModal()" class="flex-1 py-3 rounded-xl font-semibold transition" style="border:1.5px solid rgba(26,20,8,0.15);color:#5A5040;">Cancel</button>
+                    <button type="submit" class="flex-1 py-3 rounded-xl font-bold text-white hover:opacity-90 transition" style="background:#FF3E8A;">Upload</button>
                 </div>
             </form>
         </div>
@@ -55,14 +55,14 @@
     {% endif %}
 
     <!-- Image Viewer Modal -->
-    <div id="imageViewer" class="fixed inset-0 z-[9998] hidden items-center justify-center bg-black/95 backdrop-blur-md">
-        <button onclick="closeViewer()" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition z-10">
+    <div id="imageViewer" class="fixed inset-0 z-[9998] hidden items-center justify-center" style="background:rgba(26,20,8,0.95);backdrop-filter:blur(12px);">
+        <button onclick="closeViewer()" class="absolute top-5 right-5 w-10 h-10 rounded-full flex items-center justify-center text-white transition z-10 hover:scale-110" style="background:rgba(255,255,255,0.15);">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
-        <button onclick="navigateViewer(-1)" class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition z-10">
+        <button onclick="navigateViewer(-1)" class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center text-white transition z-10 hover:scale-110" style="background:rgba(255,255,255,0.15);">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
         </button>
-        <button onclick="navigateViewer(1)" class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition z-10">
+        <button onclick="navigateViewer(1)" class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center text-white transition z-10 hover:scale-110" style="background:rgba(255,255,255,0.15);">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         </button>
         
@@ -72,20 +72,20 @@
                 <img id="viewerImage" src="" alt="" class="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl">
             </div>
             <!-- Info side -->
-            <div class="w-80 bg-[#0c0c18] border-l border-white/10 flex flex-col">
-                <div class="p-6 border-b border-white/10">
-                    <h3 id="viewerTitle" class="font-syne text-xl font-bold text-white mb-1"></h3>
-                    <p id="viewerDesc" class="text-white/50 text-sm"></p>
+            <div class="w-80 flex flex-col" style="background:#FDFCF8;border-left:1px solid rgba(26,20,8,0.10);">
+                <div class="p-6 border-b" style="border-color:rgba(26,20,8,0.08);">
+                    <h3 id="viewerTitle" class="font-syne text-xl font-bold mb-1" style="color:#1A1408;"></h3>
+                    <p id="viewerDesc" class="text-sm" style="color:#8A7A60;"></p>
                 </div>
                 <!-- Like / actions -->
-                <div class="p-4 border-b border-white/10 flex items-center gap-4">
+                <div class="p-4 border-b flex items-center gap-4" style="border-color:rgba(26,20,8,0.08);">
                     {% if request.user.is_authenticated %}
-                    <button id="likeBtn" onclick="toggleLike()" class="flex items-center gap-2 text-white/60 hover:text-rose-400 transition font-medium">
+                    <button id="likeBtn" onclick="toggleLike()" class="flex items-center gap-2 font-semibold transition" style="color:#B0A890;">
                         <svg id="likeIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                         <span id="likeCount">0</span>
                     </button>
                     {% else %}
-                    <a href="/login/?next=/#gallery" class="flex items-center gap-2 text-white/40 text-sm">
+                    <a href="/login/?next=/#gallery" class="flex items-center gap-2 text-sm" style="color:#B0A890;">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                         Login to like
                     </a>
@@ -93,18 +93,18 @@
                 </div>
                 <!-- Comments -->
                 <div class="flex-1 overflow-y-auto p-4 space-y-3" id="commentsList">
-                    <p class="text-white/30 text-sm text-center py-4">Loading comments...</p>
+                    <p class="text-sm text-center py-4" style="color:#B0A890;">Loading comments...</p>
                 </div>
                 {% if request.user.is_authenticated %}
-                <div class="p-4 border-t border-white/10">
+                <div class="p-4 border-t" style="border-color:rgba(26,20,8,0.08);">
                     <div class="flex gap-2">
-                        <input id="commentInput" type="text" placeholder="Add a comment..." class="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white placeholder-white/30 text-sm focus:outline-none focus:border-violet-500 transition">
-                        <button onclick="submitComment()" class="px-4 py-2 bg-violet-600 hover:bg-violet-700 rounded-xl text-white text-sm font-medium transition">Post</button>
+                        <input id="commentInput" type="text" placeholder="Add a comment..." class="flex-1 rounded-xl px-3 py-2 text-sm focus:outline-none transition" style="background:#F5F3EC;border:1.5px solid rgba(26,20,8,0.12);color:#1A1408;">
+                        <button onclick="submitComment()" class="px-4 py-2 rounded-xl text-white text-sm font-bold transition hover:opacity-90" style="background:#FF3E8A;">Post</button>
                     </div>
                 </div>
                 {% else %}
-                <div class="p-4 border-t border-white/10">
-                    <a href="/login/" class="block text-center text-sm text-violet-400 hover:text-violet-300 transition">Login to comment</a>
+                <div class="p-4 border-t" style="border-color:rgba(26,20,8,0.08);">
+                    <a href="/login/" class="block text-center text-sm font-semibold transition" style="color:#FF3E8A;">Login to comment</a>
                 </div>
                 {% endif %}
             </div>

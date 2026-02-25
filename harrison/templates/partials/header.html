@@ -59,7 +59,80 @@
                 {% if request.user.is_superuser %}
                 <button onclick="openUploadModal()" class="block py-2 text-violet-400 transition text-sm w-full text-left">+ Upload Image</button>
                 <a href="/admin/" class="block py-2 text-white/70 hover:text-white transition text-sm">Admin Panel</a>
+                {% load static %}
+<nav class="fixed w-full z-50 transition-all duration-500" id="navbar" style="background:rgba(253,252,248,0.9);backdrop-filter:blur(20px);border-bottom:1px solid rgba(26,20,8,0.08);">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="flex justify-between items-center h-18" style="height:4.5rem;">
+            <a href="#home" class="font-syne text-2xl font-bold tracking-tight">
+                <span style="color:#1A1408;">H</span><span style="color:#FF3E8A;">M</span>
+            </a>
+            
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#home" class="nav-link text-sm tracking-wide">Home</a>
+                <a href="#about" class="nav-link text-sm tracking-wide">About</a>
+                <a href="#experience" class="nav-link text-sm tracking-wide">Experience</a>
+                <a href="#projects" class="nav-link text-sm tracking-wide">Projects</a>
+                <a href="#gallery" class="nav-link text-sm tracking-wide">Gallery</a>
+                <a href="#contact" class="nav-link text-sm tracking-wide">Contact</a>
+            </div>
+
+            <div class="flex items-center gap-3">
+                {% if request.user.is_authenticated %}
+                    <div class="hidden md:flex items-center gap-3">
+                        {% if request.user.is_superuser %}
+                        <button onclick="openUploadModal()" style="background:#FFF3A3;border:1.5px solid #F5C800;color:#1A1408;" class="px-4 py-2 rounded-full text-sm font-semibold hover:opacity-80 transition">
+                            + Upload
+                        </button>
+                        <a href="/admin/" style="background:#F5F3EC;border:1.5px solid rgba(26,20,8,0.12);color:#5A5040;" class="px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-100 transition">Admin</a>
+                        {% endif %}
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" style="background:linear-gradient(135deg,#FF3E8A,#F5C800);">
+                                {{ request.user.username|first|upper }}
+                            </div>
+                            <a href="/logout/" style="color:#B0A890;" class="hover:text-pink-500 text-sm transition">Logout</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="/login/" style="background:#FF3E8A;color:white;" class="px-5 py-2.5 rounded-full text-sm font-semibold hover:opacity-90 transition shadow-md">
+                        Sign In
+                    </a>
+                    <a href="/register/" style="background:#F5C800;color:#1A1408;" class="px-5 py-2.5 rounded-full text-sm font-semibold hover:opacity-90 transition shadow-md">
+                        Register
+                    </a>
                 {% endif %}
+
+                <button id="mobileMenuBtn" class="md:hidden w-10 h-10 rounded-full flex items-center justify-center" style="background:#F5F3EC;border:1.5px solid rgba(26,20,8,0.1);">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:#1A1408;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="hidden md:hidden border-t" style="background:#FDFCF8;border-color:rgba(26,20,8,0.08);">
+        <div class="px-6 py-4 space-y-2">
+            <a href="#home" class="block py-2 text-sm" style="color:#5A5040;">Home</a>
+            <a href="#about" class="block py-2 text-sm" style="color:#5A5040;">About</a>
+            <a href="#experience" class="block py-2 text-sm" style="color:#5A5040;">Experience</a>
+            <a href="#projects" class="block py-2 text-sm" style="color:#5A5040;">Projects</a>
+            <a href="#gallery" class="block py-2 text-sm" style="color:#5A5040;">Gallery</a>
+            <a href="#contact" class="block py-2 text-sm" style="color:#5A5040;">Contact</a>
+            {% if request.user.is_authenticated %}
+                {% if request.user.is_superuser %}
+                <button onclick="openUploadModal()" class="block py-2 text-sm w-full text-left" style="color:#FF3E8A;">+ Upload Image</button>
+                <a href="/admin/" class="block py-2 text-sm" style="color:#5A5040;">Admin Panel</a>
+                {% endif %}
+                <a href="/logout/" class="block py-2 text-sm" style="color:#FF3E8A;">Logout</a>
+            {% else %}
+                <a href="/login/" class="block py-2 text-sm" style="color:#FF3E8A;">Sign In</a>
+                <a href="/register/" class="block py-2 text-sm" style="color:#F5C800;">Register</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+{% endif %}
                 <a href="/logout/" class="block py-2 text-rose-400 hover:text-rose-300 transition text-sm">Logout</a>
             {% else %}
                 <a href="/login/" class="block py-2 text-violet-400 hover:text-violet-300 transition text-sm">Sign In</a>
