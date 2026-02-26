@@ -48,10 +48,22 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'portifolio_project.wsgi.application'
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
+# POSTGRESQL DATABASE CONFIGURATION
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'portfolio',
+        'USER': 'harr',
+        'PASSWORD': 'harris123', 
+        'HOST': '192.168.100.45',
+        'PORT': '5432',
     }
 }
 
