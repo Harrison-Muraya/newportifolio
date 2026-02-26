@@ -22,61 +22,217 @@
     </div>
 
     {% if not request.user.is_authenticated %}
-    <p class="gallery-hint">
-      <a href="/login/">Sign in</a> to like and comment on images.
-    </p>
+    <div class="gallery-auth-banner">
+      <div class="gallery-auth-banner-icon">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="gallery-auth-banner-title">Images are locked</div>
+        <div class="gallery-auth-banner-sub">
+          <a href="/login/">Sign in</a> or <a href="/register/">create a free account</a> to view, like, and comment on all images.
+        </div>
+      </div>
+    </div>
     {% endif %}
 
     <div id="galleryGrid" class="gallery-grid">
-      {% for img in gallery_images %}
-      <div class="gallery-item"
-           data-category="{{ img.category }}"
-           data-id="{{ img.id }}"
-           onclick="openViewer({{ img.id }})">
-        <img src="{{ img.image.url }}" alt="{{ img.title }}" loading="lazy">
-        <div class="gallery-overlay">
-          <div>
-            <div class="gallery-overlay-title">{{ img.title }}</div>
-            <div class="gallery-overlay-meta">
-              <span>♥ {{ img.like_count }}</span>
-              <span>💬 {{ img.comment_count }}</span>
+
+      {% if gallery_images %}
+
+        {% for img in gallery_images %}
+          {% if request.user.is_authenticated %}
+          <div class="gallery-item"
+               data-category="{{ img.category }}"
+               data-id="{{ img.id }}"
+               onclick="openViewer({{ img.id }})">
+            <img src="{{ img.image.url }}" alt="{{ img.title }}" loading="lazy">
+            <div class="gallery-overlay">
+              <div>
+                <div class="gallery-overlay-title">{{ img.title }}</div>
+                <div class="gallery-overlay-meta">
+                  <span>♥ {{ img.like_count }}</span>
+                  <span>💬 {{ img.comment_count }}</span>
+                </div>
+              </div>
             </div>
           </div>
+          {% else %}
+          <div class="gallery-item gallery-item-locked"
+               data-category="{{ img.category }}"
+               data-id="locked"
+               onclick="window.location='/login/?next=/#gallery'">
+            <img src="{{ img.image.url }}" alt="Locked" loading="lazy" class="gallery-img-blurred">
+            <div class="gallery-lock-overlay">
+              <div class="gallery-lock-icon">
+                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+              </div>
+              <span class="gallery-lock-label">Sign in to view</span>
+            </div>
+          </div>
+          {% endif %}
+        {% endfor %}
+
+      {% else %}
+
+        {% if request.user.is_authenticated %}
+        <!-- Authenticated empty state: show placeholder images normally -->
+        <div class="gallery-item" data-category="projects" data-id="placeholder">
+          <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=450&fit=crop" alt="Web Development" loading="lazy">
+          <div class="gallery-overlay"><div><div class="gallery-overlay-title">Web Development</div></div></div>
         </div>
-      </div>
-      {% empty %}
-      <!-- Placeholder images when no gallery images uploaded yet -->
-      <div class="gallery-item" data-category="projects" data-id="placeholder">
-        <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=450&fit=crop" alt="Web Development" loading="lazy">
-        <div class="gallery-overlay">
-          <div><div class="gallery-overlay-title">Web Development</div></div>
+        <div class="gallery-item" data-category="workspace" data-id="placeholder">
+          <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=700&fit=crop" alt="Dev Setup" loading="lazy">
+          <div class="gallery-overlay"><div><div class="gallery-overlay-title">Dev Setup</div></div></div>
         </div>
-      </div>
-      <div class="gallery-item" data-category="workspace" data-id="placeholder">
-        <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=700&fit=crop" alt="Dev Setup" loading="lazy">
-        <div class="gallery-overlay">
-          <div><div class="gallery-overlay-title">Dev Setup</div></div>
+        <div class="gallery-item" data-category="projects" data-id="placeholder">
+          <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&h=400&fit=crop" alt="Backend Work" loading="lazy">
+          <div class="gallery-overlay"><div><div class="gallery-overlay-title">Backend Development</div></div></div>
         </div>
-      </div>
-      <div class="gallery-item" data-category="projects" data-id="placeholder">
-        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&h=400&fit=crop" alt="Backend Work" loading="lazy">
-        <div class="gallery-overlay">
-          <div><div class="gallery-overlay-title">Backend Development</div></div>
+        <div class="gallery-item" data-category="team" data-id="placeholder">
+          <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=450&fit=crop" alt="Team" loading="lazy">
+          <div class="gallery-overlay"><div><div class="gallery-overlay-title">Team Work</div></div></div>
         </div>
-      </div>
-      <div class="gallery-item" data-category="team" data-id="placeholder">
-        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=450&fit=crop" alt="Team" loading="lazy">
-        <div class="gallery-overlay">
-          <div><div class="gallery-overlay-title">Team Work</div></div>
+        <div class="gallery-item" data-category="workspace" data-id="placeholder">
+          <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&h=500&fit=crop" alt="Coding" loading="lazy">
+          <div class="gallery-overlay"><div><div class="gallery-overlay-title">Coding Session</div></div></div>
         </div>
-      </div>
-      <div class="gallery-item" data-category="workspace" data-id="placeholder">
-        <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&h=500&fit=crop" alt="Coding" loading="lazy">
-        <div class="gallery-overlay">
-          <div><div class="gallery-overlay-title">Coding Session</div></div>
+
+        {% else %}
+        <!-- Guest empty state: blurred placeholder previews -->
+        <div class="gallery-item gallery-item-locked" data-category="projects" data-id="locked" onclick="window.location='/login/?next=/#gallery'">
+          <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=450&fit=crop" alt="Locked" loading="lazy" class="gallery-img-blurred">
+          <div class="gallery-lock-overlay">
+            <div class="gallery-lock-icon"><svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>
+            <span class="gallery-lock-label">Sign in to view</span>
+          </div>
         </div>
-      </div>
-      {% endfor %}
+        <div class="gallery-item gallery-item-locked" data-category="workspace" data-id="locked" onclick="window.location='/login/?next=/#gallery'">
+          <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=700&fit=crop" alt="Locked" loading="lazy" class="gallery-img-blurred">
+          <div class="gallery-lock-overlay">
+            <div class="gallery-lock-icon"><svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>
+            <span class="gallery-lock-label">Sign in to view</span>
+          </div>
+        </div>
+        <div class="gallery-item gallery-item-locked" data-category="projects" data-id="locked" onclick="window.location='/login/?next=/#gallery'">
+          <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&h=400&fit=crop" alt="Locked" loading="lazy" class="gallery-img-blurred">
+          <div class="gallery-lock-overlay">
+            <div class="gallery-lock-icon"><svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>
+            <span class="gallery-lock-label">Sign in to view</span>
+          </div>
+        </div>
+        <div class="gallery-item gallery-item-locked" data-category="team" data-id="locked" onclick="window.location='/login/?next=/#gallery'">
+          <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=450&fit=crop" alt="Locked" loading="lazy" class="gallery-img-blurred">
+          <div class="gallery-lock-overlay">
+            <div class="gallery-lock-icon"><svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>
+            <span class="gallery-lock-label">Sign in to view</span>
+          </div>
+        </div>
+        <div class="gallery-item gallery-item-locked" data-category="workspace" data-id="locked" onclick="window.location='/login/?next=/#gallery'">
+          <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&h=500&fit=crop" alt="Locked" loading="lazy" class="gallery-img-blurred">
+          <div class="gallery-lock-overlay">
+            <div class="gallery-lock-icon"><svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>
+            <span class="gallery-lock-label">Sign in to view</span>
+          </div>
+        </div>
+        {% endif %}
+
+      {% endif %}
+
     </div>
   </div>
 </section>
+
+<style>
+/* ── Auth banner ── */
+.gallery-auth-banner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(232, 57, 29, 0.08);
+  border: 1.5px solid rgba(232, 57, 29, 0.2);
+  border-radius: 0.875rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.75rem;
+}
+.gallery-auth-banner-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: rgba(232, 57, 29, 0.15);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.gallery-auth-banner-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--cream);
+  margin-bottom: 0.15rem;
+}
+.gallery-auth-banner-sub {
+  font-size: 0.8125rem;
+  color: rgba(248, 245, 238, 0.5);
+  line-height: 1.5;
+}
+.gallery-auth-banner-sub a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+.gallery-auth-banner-sub a:hover { text-decoration: underline; }
+
+/* ── Blurred image ── */
+.gallery-img-blurred {
+  filter: blur(14px) brightness(0.55);
+  transform: scale(1.06);
+  transition: filter 0.3s;
+}
+.gallery-item-locked:hover .gallery-img-blurred {
+  filter: blur(16px) brightness(0.45);
+}
+
+/* ── Lock overlay ── */
+.gallery-lock-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  z-index: 2;
+}
+.gallery-lock-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: rgba(13, 13, 13, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1.5px solid rgba(248, 245, 238, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(248, 245, 238, 0.9);
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+.gallery-item-locked:hover .gallery-lock-icon {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: scale(1.12);
+}
+.gallery-lock-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: rgba(248, 245, 238, 0.85);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+}
+</style>
