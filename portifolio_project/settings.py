@@ -56,14 +56,25 @@ WSGI_APPLICATION = 'portifolio_project.wsgi.application'
 # }
 
 # POSTGRESQL DATABASE CONFIGURATION
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'portfolio',
+#         'USER': 'harr',
+#         'PASSWORD': 'harris123', 
+#         'HOST': '192.168.100.45',
+#         'PORT': '5432',
+#     }
+# }
+
+# mysql DATABASE CONFIGURATION
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': 'portfolio',
-        'USER': 'harr',
-        'PASSWORD': 'harris123', 
-        'HOST': '192.168.100.45',
-        'PORT': '5432',
+        'USER': 'harrisonmuraya',
+        'PASSWORD': 'harris123',
+        'HOST': 'harrisonmuraya.mysql.pythonanywhere-services.com',     
     }
 }
 
