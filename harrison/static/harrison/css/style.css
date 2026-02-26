@@ -271,28 +271,68 @@ body {
 .hero-grid-lines {
   position: absolute;
   inset: 0;
-  background:
-    url("data:image/svg+xml;utf8,\
-    <svg xmlns='http://www.w3.org/2000/svg' width='80' height='40' viewBox='0 0 80 40'>\
-    <path d='M0 20 Q20 5 40 20 T80 20' fill='none' stroke='rgba(248,245,238,0.08)' stroke-width='1'/>\
-    <path d='M0 28 Q20 13 40 28 T80 28' fill='none' stroke='rgba(248,245,238,0.06)' stroke-width='1'/>\
-    </svg>");
-  background-size: 80px 40px;
-  background-repeat: repeat;
-  animation: waveDrift 18s ease-in-out infinite, waveGlow 6s ease-in-out infinite;
-  filter: brightness(1.1);
   pointer-events: none;
+  overflow: hidden;
 }
 
-@keyframes waveDrift {
+/* Common styling for both layers */
+.hero-grid-lines::before,
+.hero-grid-lines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-repeat: repeat;
+  animation: waveGlow 10s ease-in-out infinite;
+  will-change: background-position, opacity, filter;
+}
+
+/* Front layer — warm, slower shimmer, rightward flow */
+.hero-grid-lines::before {
+  background-image:
+    url("data:image/svg+xml;utf8,\
+    <svg xmlns='http://www.w3.org/2000/svg' width='80' height='40' viewBox='0 0 80 40'>\
+    <path d='M0 20 Q20 5 40 20 T80 20' fill='none' stroke='rgba(232,57,29,0.05)' stroke-width='1'/>\
+    <path d='M0 28 Q20 13 40 28 T80 28' fill='none' stroke='rgba(232,57,29,0.04)' stroke-width='1'/>\
+    </svg>");
+  background-size: 80px 40px;
+  animation: waveDriftRight 28s ease-in-out infinite, waveGlow 10s ease-in-out infinite;
+  filter: brightness(1.2);
+  mix-blend-mode: screen;
+  z-index: 2;
+}
+
+/* Back layer — cool, drifting left, slower & softer */
+.hero-grid-lines::after {
+  background-image:
+    url("data:image/svg+xml;utf8,\
+    <svg xmlns='http://www.w3.org/2000/svg' width='120' height='60' viewBox='0 0 120 60'>\
+    <path d='M0 30 Q30 10 60 30 T120 30' fill='none' stroke='rgba(248,245,238,0.07)' stroke-width='1'/>\
+    <path d='M0 40 Q30 20 60 40 T120 40' fill='none' stroke='rgba(248,245,238,0.05)' stroke-width='1'/>\
+    </svg>");
+  background-size: 120px 60px;
+  animation: waveDriftLeft 40s ease-in-out infinite, waveGlow 12s ease-in-out infinite;
+  filter: brightness(0.95);
+  mix-blend-mode: lighten;
+  z-index: 1;
+}
+
+/* Diagonal opposing drifts */
+@keyframes waveDriftRight {
   0%   { background-position: 0 0; }
-  50%  { background-position: 80px 20px; }
+  50%  { background-position: 80px 40px; }
   100% { background-position: 0 0; }
 }
 
+@keyframes waveDriftLeft {
+  0%   { background-position: 0 0; }
+  50%  { background-position: -120px 40px; }
+  100% { background-position: 0 0; }
+}
+
+/* Smooth glow shimmer */
 @keyframes waveGlow {
-  0%, 100% { opacity: 0.7; filter: brightness(1.1); }
-  50%      { opacity: 1; filter: brightness(1.3); }
+  0%, 100% { opacity: 0.65; filter: brightness(1); }
+  50%      { opacity: 0.95; filter: brightness(1.3); }
 }
 
 /* --- */
