@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -7,6 +8,12 @@ SECRET_KEY = 'django-insecure-uuc2z_%w%&8%dx5uwj98^x!%#ws53eawe3m^xn+wn90u_$@_ga
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+
+# Prefer a local SSH tunnel when public NAT for :2020 is down.
+AGENT_CHAT_URL = os.environ.get(
+    "AGENT_CHAT_URL",
+    "http://197.248.201.233:2020/chat",
+)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -48,12 +55,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'portifolio_project.wsgi.application'
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 # POSTGRESQL DATABASE CONFIGURATION
 # DATABASES = {
@@ -68,15 +75,15 @@ WSGI_APPLICATION = 'portifolio_project.wsgi.application'
 # }
 
 # mysql DATABASE CONFIGURATION
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'portfolio',
-        'USER': 'harrisonmuraya',
-        'PASSWORD': 'harris123',
-        'HOST': 'harrisonmuraya.mysql.pythonanywhere-services.com',     
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'portfolio',
+#         'USER': 'harrisonmuraya',
+#         'PASSWORD': 'harris123',
+#         'HOST': 'harrisonmuraya.mysql.pythonanywhere-services.com',     
+#     }
+# }
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},

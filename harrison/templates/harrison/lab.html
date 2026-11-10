@@ -1,0 +1,137 @@
+{% extends 'harrison/base.html' %}
+{% load static %}
+{% block content %}
+{% include 'partials/header.html' %}
+<section id="lab" class="page-shell">
+  <span class="section-label">Lab</span>
+  <h1 class="section-title">Play with the work</h1>
+  <p class="lab-lead">The terminal is optional. The pages above still open every project, the about page, and contact.</p>
+
+  <div id="lab-terminal" data-terminal>
+    <div class="terminal-bar">
+      <span>visitor@harrison</span>
+      <button type="button" data-terminal-close aria-expanded="true" aria-controls="lab-terminal-body">Close</button>
+    </div>
+    <div id="lab-terminal-body" data-terminal-body>
+      <div class="terminal-suggestions" role="group" aria-label="Suggested commands">
+        <button type="button" data-command="help">help</button>
+        <button type="button" data-command="about">about</button>
+        <button type="button" data-command="projects">projects</button>
+        <button type="button" data-command="skills">skills</button>
+        <button type="button" data-command="experience">experience</button>
+        <button type="button" data-command="contact">contact</button>
+      </div>
+      <div id="lab-output" data-terminal-output aria-live="polite"></div>
+      <form id="lab-form" data-terminal-form>
+        <label class="lab-prompt" for="lab-input">visitor@harrison:~$</label>
+        <input id="lab-input" data-terminal-input autocomplete="off" spellcheck="false" aria-label="Terminal command">
+      </form>
+    </div>
+  </div>
+
+  <div id="stk-demo" class="stk-demo">
+    <h2>M-Pesa STK push</h2>
+    <p>A fake prompt so you can see the flow. Nothing is charged.</p>
+    <form id="stk-form">
+      <input id="stk-phone" inputmode="numeric" placeholder="07XX XXX XXX" aria-label="Phone">
+      <input id="stk-amount" type="number" min="1" value="100" aria-label="Amount">
+      <button type="submit">Send prompt</button>
+    </form>
+    <ol id="stk-steps" class="stk-steps"></ol>
+  </div>
+
+  <section id="architecture" class="play-block" aria-labelledby="arch-title">
+    <h2 id="arch-title">Payment flow</h2>
+    <p>Simplified from the payment work at Smart Web Kenya: PayPal, Chpter, and M-Pesa, plus the payout workflow. This diagram does not call a live API.</p>
+    <div class="arch" id="arch-diagram">
+      <button type="button" class="arch-node" data-node="visitor" aria-pressed="false">Visitor</button>
+      <button type="button" class="arch-node" data-node="app" aria-pressed="false">Laravel &amp; Livewire app</button>
+      <div class="arch-row">
+        <button type="button" class="arch-node" data-node="mpesa" aria-pressed="false">M-Pesa</button>
+        <button type="button" class="arch-node" data-node="paypal" aria-pressed="false">PayPal</button>
+        <button type="button" class="arch-node" data-node="chpter" aria-pressed="false">Chpter</button>
+      </div>
+      <button type="button" class="arch-node" data-node="payout" aria-pressed="false">Payout workflow</button>
+    </div>
+    <div id="arch-detail" aria-live="polite">
+      <h3 id="arch-name">Select a component</h3>
+      <p id="arch-copy">Choose a box to see how it connects. The list under the diagram says the same thing in text.</p>
+      <pre id="arch-payload" hidden><code></code></pre>
+    </div>
+    <button type="button" id="arch-reset">Reset diagram</button>
+    <h3>The same flow, in text</h3>
+    <ol class="arch-text">
+      <li>A visitor starts in the Laravel and Livewire application.</li>
+      <li>That application talks to M-Pesa, PayPal, and Chpter.</li>
+      <li>Payout workflows move funds on from the application, including through M-Pesa.</li>
+    </ol>
+  </section>
+
+  <section id="api-playground" class="play-block" aria-labelledby="api-title">
+    <h2 id="api-title">API playground</h2>
+    <p>Simulated responses only. Nothing is sent to a server.</p>
+    <div class="api-controls">
+      <label for="api-endpoint">Sample endpoint</label>
+      <select id="api-endpoint">
+        <option value="health">GET /health</option>
+        <option value="stk">POST /payments/stk</option>
+        <option value="domain">GET /domains/check</option>
+      </select>
+      <div class="api-fields" data-api-fields="stk" hidden>
+        <label for="api-phone">Phone</label>
+        <input id="api-phone" inputmode="numeric" value="254712345678" autocomplete="off">
+        <label for="api-amount">Amount</label>
+        <input id="api-amount" type="number" min="1" value="100">
+      </div>
+      <div class="api-fields" data-api-fields="domain" hidden>
+        <label for="api-name">Domain name</label>
+        <input id="api-name" value="example.co.ke" autocomplete="off">
+      </div>
+      <div class="api-actions">
+        <button type="button" id="api-run">Run demonstration</button>
+        <button type="button" id="api-error">Show error example</button>
+        <button type="button" id="api-reset">Reset</button>
+      </div>
+    </div>
+    <pre id="api-output" aria-live="polite">Select an endpoint and run the demonstration.</pre>
+  </section>
+
+  <section id="flow-challenge" class="play-block" aria-labelledby="challenge-title">
+    <h2 id="challenge-title">Order the payout steps</h2>
+    <p>These steps follow the payment integrations and the STK demonstration above. Put them in order.</p>
+    <ol id="challenge-list">
+      <li data-step="3">
+        <span>Wait for the PIN on the phone</span>
+        <button type="button" data-move="up" aria-label="Move wait for the PIN up">Up</button>
+        <button type="button" data-move="down" aria-label="Move wait for the PIN down">Down</button>
+      </li>
+      <li data-step="1">
+        <span>Collect the amount and phone number</span>
+        <button type="button" data-move="up" aria-label="Move collect the amount up">Up</button>
+        <button type="button" data-move="down" aria-label="Move collect the amount down">Down</button>
+      </li>
+      <li data-step="5">
+        <span>Record the payout</span>
+        <button type="button" data-move="up" aria-label="Move record the payout up">Up</button>
+        <button type="button" data-move="down" aria-label="Move record the payout down">Down</button>
+      </li>
+      <li data-step="2">
+        <span>Send the STK push</span>
+        <button type="button" data-move="up" aria-label="Move send the STK push up">Up</button>
+        <button type="button" data-move="down" aria-label="Move send the STK push down">Down</button>
+      </li>
+      <li data-step="4">
+        <span>Receive the callback</span>
+        <button type="button" data-move="up" aria-label="Move receive the callback up">Up</button>
+        <button type="button" data-move="down" aria-label="Move receive the callback down">Down</button>
+      </li>
+    </ol>
+    <div class="api-actions">
+      <button type="button" id="challenge-check">Check order</button>
+      <button type="button" id="challenge-reset">Reset</button>
+    </div>
+    <p id="challenge-feedback" aria-live="polite"></p>
+  </section>
+</section>
+{% include 'partials/footer.html' %}
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'harrison/base.html' %}
+{% load static %}
+
+{% block content %}
+{% include 'partials/header.html' %}
+<section class="page-shell">
+  <span class="section-label">Work</span>
+  <h1 class="section-title">Case studies</h1>
+
+  <div class="work-filters">
+    <button type="button" class="work-filter active" data-filter="all" aria-pressed="true">All</button>
+    <button type="button" class="work-filter" data-filter="Laravel" aria-pressed="false">Laravel</button>
+    <button type="button" class="work-filter" data-filter="Python" aria-pressed="false">Python</button>
+    <button type="button" class="work-filter" data-filter="FastAPI" aria-pressed="false">FastAPI</button>
+    <button type="button" class="work-filter" data-filter="Proxmox" aria-pressed="false">Proxmox</button>
+  </div>
+
+  <div class="work-grid">
+    {% for study in case_studies %}
+    <article class="work-card" data-tags="{{ study.tags|join:',' }}">
+      <h2 class="proj-title"><a href="{% url 'work_detail' study.slug %}">{{ study.title }}</a></h2>
+      <p class="proj-desc">{{ study.summary }}</p>
+      <div class="proj-tags">
+        {% for tag in study.tags %}
+        <span class="proj-tag">{{ tag }}</span>
+        {% endfor %}
+      </div>
+      <p class="work-card-links">
+        <a class="proj-link" href="{% url 'work_detail' study.slug %}">Read the story</a>
+        {% if study.video %}
+        <a class="proj-link" href="{{ study.video }}" target="_blank" rel="noopener">{{ study.video_label|default:"Watch video" }}</a>
+        {% endif %}
+        <button type="button" class="proj-link proj-link-btn" data-ask-agent="Tell me about {{ study.title }}">Ask agent</button>
+      </p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% include 'partials/footer.html' %}
+<script>
+  document.querySelectorAll('.work-filter').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.work-filter').forEach(function (other) {
+        other.classList.remove('active');
+        other.setAttribute('aria-pressed', 'false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
+      if (window.portfolioTrack) {
+        window.portfolioTrack('project_filter_changed', { filter: btn.getAttribute('data-filter') });
+      }
+      var filter = btn.getAttribute('data-filter');
+      document.querySelectorAll('.work-card').forEach(function (card) {
+        var tags = card.getAttribute('data-tags') || '';
+        var show = filter === 'all' || tags.indexOf(filter) !== -1;
+        card.style.display = show ? '' : 'none';
+      });
+    });
+  });
+</script>
+{% endblock %}

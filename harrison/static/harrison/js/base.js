@@ -15,7 +15,8 @@ const mobileMenuBtn = document.getElementById('mobileMenuBtn');
 const mobileMenu = document.getElementById('mobileMenu');
 if (mobileMenuBtn && mobileMenu) {
   mobileMenuBtn.addEventListener('click', () => {
-    mobileMenu.classList.toggle('open');
+    const open = mobileMenu.classList.toggle('open');
+    mobileMenuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
   // Close on link click
   mobileMenu.querySelectorAll('a').forEach(link => {

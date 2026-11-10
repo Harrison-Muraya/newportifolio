@@ -4,6 +4,13 @@ from . import views
 urlpatterns = [
     # ── Public ──────────────────────────────────────
     path('', views.home, name='home'),
+    path('work/', views.work, name='work'),
+    path('work/<slug:slug>/', views.work_detail, name='work_detail'),
+    path('lab/', views.lab, name='lab'),
+    path('about/', views.about, name='about'),
+    path('chat/', views.agent_chat, name='agent_chat'),
+    path('chat/send/', views.agent_chat_send, name='agent_chat_send'),
+    path('chat/stream/', views.agent_chat_stream, name='agent_chat_stream'),
     path('login/', views.login_view, name='login'),
     path('register/', views.register_view, name='register'),
     path('logout/', views.logout_view, name='logout'),

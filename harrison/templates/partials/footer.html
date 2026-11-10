@@ -1,9 +1,27 @@
 <footer>
   <div class="footer-inner">
     <div>
-      <a href="#home" class="footer-logo">H<span>M</span></a>
+      <a href="{% url 'home' %}" class="footer-logo">H<span>M</span></a>
       <div class="footer-tagline">Full-Stack Developer · Nairobi, Kenya</div>
     </div>
+
+    <nav class="footer-links" aria-label="Footer">
+      <a href="{% url 'work' %}">Work</a>
+      <a href="{% url 'lab' %}">Lab</a>
+      <a href="{% url 'agent_chat' %}">Chat</a>
+      <a href="{% url 'about' %}">About</a>
+      <a href="{% url 'about' %}#contact" data-track="contact_clicked">Contact</a>
+      <button type="button" id="motion-toggle" class="footer-motion">Motion on</button>
+      {% if request.user.is_authenticated %}
+        {% if request.user.is_superuser %}
+          <a href="{% url 'dashboard' %}">Dashboard</a>
+        {% endif %}
+        <a href="{% url 'logout' %}">Logout</a>
+      {% else %}
+        <a href="{% url 'login' %}">Sign In</a>
+        <a href="{% url 'register' %}">Register</a>
+      {% endif %}
+    </nav>
 
     <div class="footer-socials">
       <a href="https://github.com/Harrison-Muraya" target="_blank" class="footer-social" aria-label="GitHub">
@@ -18,6 +36,22 @@
     </div>
   </div>
   <div class="footer-copy">&copy; <span id="year"></span> Harrison Muraya. All rights reserved.</div>
+
+  <style>
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.25rem;
+      align-items: center;
+    }
+    .footer-links a {
+      color: var(--ink-muted);
+      text-decoration: none;
+      font-size: 0.8125rem;
+      font-weight: 600;
+    }
+    .footer-links a:hover { color: var(--accent); }
+  </style>
 
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();

@@ -4,116 +4,37 @@
 {% block content %}
   {% include 'partials/header.html' %}
   {% include 'partials/hero.html' %}
-  {% include 'partials/about.html' %}
-  {% include 'partials/experience.html' %}
-  {% include 'partials/projectsection.html' %}
-  {% include 'partials/education.html' %}
-  {% include 'partials/gallery.html' %}
-  {% include 'partials/contact.html' %}
-  {% include 'partials/footer.html' %}
 
-  <!-- ============ UPLOAD MODAL (Admin only) ============ -->
-  {% if request.user.is_superuser %}
-  <div id="uploadModal">
-    <div class="modal-card">
-      <div class="modal-title">Upload Image</div>
-      <form id="uploadForm" enctype="multipart/form-data">
-        {% csrf_token %}
-
-        <div class="form-group">
-          <label class="form-label" for="uploadTitle">Title</label>
-          <input name="title" id="uploadTitle" type="text" required placeholder="Image title" class="form-input">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="uploadDesc">Description</label>
-          <textarea name="description" id="uploadDesc" rows="2" placeholder="Brief description..." class="form-textarea"></textarea>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="uploadCategory">Category</label>
-          <select name="category" id="uploadCategory" class="form-input">
-            <option value="projects">Projects</option>
-            <option value="workspace">Workspace</option>
-            <option value="team">Team &amp; Events</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Image File</label>
-          <div class="dropzone" id="dropZone">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-            <p id="dropText">Drop image here or <span>click to browse</span></p>
-            <input type="file" name="image" id="imageInput" accept="image/*" style="display:none" required>
-          </div>
-        </div>
-
-        <div class="modal-btns">
-          <button type="button" onclick="closeUploadModal()" class="btn-cancel">Cancel</button>
-          <button type="submit" class="btn-upload">Upload</button>
-        </div>
-      </form>
-    </div>
-  </div>
-  {% endif %}
-
-  <!-- ============ IMAGE VIEWER MODAL ============ -->
-  <div id="imageViewer">
-    <!-- Close button -->
-    <button class="viewer-close" onclick="closeViewer()" aria-label="Close">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-    </button>
-
-    <!-- Main image area -->
-    <div class="viewer-main">
-      <button class="viewer-nav prev" onclick="navigateViewer(-1)" aria-label="Previous">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-      </button>
-      <img id="viewerImage" src="" alt="" class="viewer-image">
-      <button class="viewer-nav next" onclick="navigateViewer(1)" aria-label="Next">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-      </button>
-    </div>
-
-    <!-- Sidebar -->
-    <div class="viewer-sidebar">
-      <!-- Title & description -->
-      <div class="viewer-info">
-        <div id="viewerTitle"></div>
-        <div id="viewerDesc"></div>
-      </div>
-
-      <!-- Like button -->
-      <div class="viewer-actions">
-        {% if request.user.is_authenticated %}
-        <button id="likeBtn" onclick="toggleLike()" data-id="">
-          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-          <span id="likeCount">0</span>
-        </button>
-        {% else %}
-        <a href="/login/?next=/#gallery" style="font-size:0.875rem;color:rgba(248,245,238,0.4);text-decoration:none;">
-          Sign in to like
+  <section id="projects" class="page-shell">
+    <span class="section-label">Selected work</span>
+    <h2 class="section-title">Three systems</h2>
+    <div class="featured-row">
+      {% for study in case_studies %}
+      <article class="work-card">
+        <a class="work-row" href="{% url 'work_detail' study.slug %}">
+          <span class="work-index">0{{ forloop.counter }}</span>
+          <span class="work-copy">
+            <h3 class="proj-title">{{ study.title }}</h3>
+            <p class="proj-desc">{{ study.summary }}</p>
+            <p class="work-meta">{% for tag in study.tags %}{{ tag }}{% if not forloop.last %} · {% endif %}{% endfor %}</p>
+          </span>
         </a>
-        {% endif %}
-      </div>
-
-      <!-- Comments list -->
-      <div class="viewer-comments" id="commentsList">
-        <p class="no-comments-msg">Loading…</p>
-      </div>
-
-      <!-- Comment input -->
-      {% if request.user.is_authenticated %}
-      <div class="viewer-comment-form">
-        <input id="commentInput" type="text" placeholder="Add a comment…" autocomplete="off">
-        <button class="btn-post" onclick="submitComment()">Post</button>
-      </div>
-      {% else %}
-      <div class="viewer-login-prompt">
-        <a href="/login/">Sign in to comment</a>
-      </div>
-      {% endif %}
+        <p class="work-card-links">
+          {% if study.video %}
+          <a class="proj-link" href="{{ study.video }}" target="_blank" rel="noopener">{{ study.video_label|default:"Watch video" }}</a>
+          {% endif %}
+          <button type="button" class="proj-link proj-link-btn" data-ask-agent="Tell me about {{ study.title }}">Ask agent</button>
+        </p>
+      </article>
+      {% endfor %}
     </div>
-  </div>
+    <p class="featured-links">
+      <a class="proj-link" href="{% url 'work' %}">All work</a>
+      <a class="proj-link" href="{% url 'lab' %}">Play in the lab</a>
+      <button type="button" class="proj-link proj-link-btn" data-open-agent>Ask Harrison</button>
+    </p>
+  </section>
 
+  {% include 'partials/agent_chat.html' %}
+  {% include 'partials/footer.html' %}
 {% endblock %}

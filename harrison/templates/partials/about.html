@@ -8,24 +8,22 @@
 
       <div class="about-text">
         <p>
-          Results-driven Software Developer with expertise in full-stack web development,
-          payment system integration, and IT support. I thrive on building things that matter —
-          products that are <strong>secure, performant, and real-world ready</strong>.
+          Full stack developer with 2+ years building and maintaining production Django applications,
+          from REST APIs through to React frontends.
         </p>
         <p>
-          I specialise in <strong>Laravel</strong>, <strong>Django</strong>, and <strong>React</strong>,
-          with hands-on experience integrating PayPal, Chpter, and M-Pesa APIs. I deliver
-          high-performance solutions aligned tightly with business objectives.
+          I also ship with <strong>Laravel</strong>, <strong>Flask</strong>, and <strong>FastAPI</strong>,
+          and I integrate PayPal, Chpter, and M-Pesa for payments and payouts.
         </p>
       </div>
 
       <div class="about-stats-row">
         <div class="stat-card">
-          <div class="stat-card-num">3+</div>
+          <div class="stat-card-num">2+</div>
           <div class="stat-card-label">Years</div>
         </div>
         <div class="stat-card">
-          <div class="stat-card-num">10+</div>
+          <div class="stat-card-num">7</div>
           <div class="stat-card-label">Projects</div>
         </div>
         <div class="stat-card">
@@ -39,6 +37,20 @@
     <div class="skills-section">
       <h3>Technical Skills</h3>
 
+      {% if skill_groups %}
+      <div class="skill-groups">
+        {% for group in skill_groups %}
+        <article class="skill-group">
+          <h3>{{ group.name }}</h3>
+          <div class="skill-pills">
+            {% for item in group.items %}
+            <span class="skill-pill">{{ item }}</span>
+            {% endfor %}
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+      {% else %}
       {% for skill, pct in skills %}
       <div class="skill-item">
         <div class="skill-header">
@@ -52,6 +64,7 @@
       {% empty %}
       <p>No skills available at the moment.</p>
       {% endfor %}
+      {% endif %}
     </div>
   </div>
 </section>

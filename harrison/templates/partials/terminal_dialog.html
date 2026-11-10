@@ -1,0 +1,26 @@
+<div id="terminal-dialog" class="terminal-dialog" hidden>
+  <div class="terminal-dialog-card" role="dialog" aria-modal="true" aria-labelledby="terminal-dialog-title">
+    <h2 id="terminal-dialog-title">Terminal</h2>
+    <div data-terminal>
+      <div class="terminal-bar">
+        <span>visitor@harrison</span>
+        <button type="button" data-terminal-close>Close</button>
+      </div>
+      <div data-terminal-body>
+        <div class="terminal-suggestions" role="group" aria-label="Suggested commands">
+          <button type="button" data-command="help">help</button>
+          <button type="button" data-command="about">about</button>
+          <button type="button" data-command="projects">projects</button>
+          <button type="button" data-command="skills">skills</button>
+          <button type="button" data-command="experience">experience</button>
+          <button type="button" data-command="contact">contact</button>
+        </div>
+        <div data-terminal-output aria-live="polite"></div>
+        <form data-terminal-form>
+          <label class="lab-prompt" for="dialog-terminal-input">visitor@harrison:~$</label>
+          <input id="dialog-terminal-input" data-terminal-input autocomplete="off" spellcheck="false" aria-label="Terminal command">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

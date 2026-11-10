@@ -1,0 +1,341 @@
+/* Floating Ask Harrison widget — Zuri-like dock, Crimson Milk */
+
+:root {
+  --aw-milk: #F7F6F3;
+  --aw-ink: #141218;
+  --aw-ink-muted: #5E5864;
+  --aw-accent: #C8102E;
+  --aw-accent-soft: #F8E8EB;
+  --aw-border: rgba(20, 18, 24, 0.12);
+  --aw-shadow: 0 18px 48px rgba(20, 18, 24, 0.16);
+  --aw-radius: 1.1rem;
+  --aw-font: "Source Sans 3", "Segoe UI", sans-serif;
+  --aw-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --aw-motion: 0.38s;
+}
+
+.hm-fab {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 380;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  color: var(--aw-ink);
+  padding: 0;
+}
+
+.hm-fab:focus-visible {
+  outline: 2px solid var(--aw-accent);
+  outline-offset: 4px;
+  border-radius: 999px;
+}
+
+.hm-fab-label {
+  background: var(--aw-milk);
+  border: 1px solid var(--aw-border);
+  box-shadow: 0 4px 14px rgba(18, 20, 26, 0.08);
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--aw-ink);
+  transition: transform 0.2s var(--aw-ease), border-color 0.2s ease;
+}
+
+.hm-fab:hover .hm-fab-label {
+  border-color: var(--aw-accent);
+  transform: translateX(-2px);
+}
+
+.hm-fab-avatar {
+  width: 3.35rem;
+  height: 3.35rem;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 2px solid var(--aw-accent);
+  box-shadow: var(--aw-shadow);
+  background: var(--aw-milk);
+  animation: hm-fab-pulse 1.35s var(--aw-ease) 1;
+}
+
+.hm-fab-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+@keyframes hm-fab-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.28), var(--aw-shadow); }
+  55% { box-shadow: 0 0 0 12px rgba(200, 16, 46, 0), var(--aw-shadow); }
+}
+
+.hm-dock {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 5.25rem;
+  width: min(400px, calc(100vw - 1.5rem));
+  height: min(540px, calc(100vh - 6.5rem));
+  z-index: 390;
+  display: flex;
+  flex-direction: column;
+  background: var(--aw-milk);
+  border: 1px solid var(--aw-border);
+  border-radius: var(--aw-radius);
+  box-shadow: var(--aw-shadow);
+  overflow: hidden;
+  transform: translateY(16px) scale(0.98);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform var(--aw-motion) var(--aw-ease),
+    opacity var(--aw-motion) var(--aw-ease);
+}
+
+.hm-dock.is-open {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+  animation: hm-dock-slide 0.42s var(--aw-ease);
+}
+
+@keyframes hm-dock-slide {
+  from { transform: translateY(20px) scale(0.98); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.hm-dock-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: linear-gradient(135deg, #C8102E 0%, #9E0C24 100%);
+  color: #fff;
+}
+
+.hm-dock-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.hm-dock-title img {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.hm-dock-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.68rem;
+  font-weight: 500;
+  opacity: 0.92;
+  margin-left: 0.35rem;
+}
+
+.hm-dock-live::before {
+  content: "";
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: #7CFFB2;
+  box-shadow: 0 0 0 3px rgba(124, 255, 178, 0.25);
+}
+
+.hm-dock-close {
+  border: 0;
+  background: rgba(255, 255, 255, 0.12);
+  color: inherit;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.35rem;
+}
+
+.hm-dock-close:hover { background: rgba(255, 255, 255, 0.22); }
+
+.hm-dock-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  background: var(--aw-milk);
+}
+
+.hm-msg {
+  max-width: 90%;
+  padding: 0.65rem 0.8rem;
+  border-radius: 0.85rem;
+  line-height: 1.45;
+  font-size: 0.94rem;
+  color: var(--aw-ink);
+}
+
+.hm-msg-bot {
+  align-self: flex-start;
+  background: var(--aw-accent-soft);
+  border: 1px solid rgba(200, 16, 46, 0.14);
+}
+
+.hm-msg-user {
+  align-self: flex-end;
+  background: var(--aw-ink);
+  color: var(--aw-milk);
+}
+
+.hm-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0 1rem 0.7rem;
+  background: var(--aw-milk);
+}
+
+.hm-chip {
+  border: 1px solid var(--aw-border);
+  background: #fff;
+  color: var(--aw-ink);
+  border-radius: 999px;
+  padding: 0.38rem 0.7rem;
+  font-size: 0.78rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.hm-chip:hover {
+  border-color: var(--aw-accent);
+  color: var(--aw-accent);
+  background: var(--aw-accent-soft);
+}
+
+.hm-dock-form {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-top: 1px solid var(--aw-border);
+  background: #fff;
+}
+
+.hm-dock-form textarea {
+  flex: 1;
+  min-height: 2.5rem;
+  max-height: 6rem;
+  resize: vertical;
+  border: 1px solid var(--aw-border);
+  border-radius: 0.6rem;
+  padding: 0.5rem 0.65rem;
+  font: inherit;
+  font-family: var(--aw-font);
+  background: var(--aw-milk);
+  color: var(--aw-ink);
+}
+
+.hm-dock-form textarea:focus {
+  outline: 2px solid rgba(200, 16, 46, 0.35);
+  outline-offset: 0;
+}
+
+.hm-dock-form button {
+  border: 0;
+  border-radius: 0.6rem;
+  background: var(--aw-accent);
+  color: #fff;
+  padding: 0 1rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.hm-dock-form button:hover { background: #9E0C24; }
+.hm-dock-form button:disabled { opacity: 0.55; cursor: wait; }
+
+.hm-typing {
+  display: inline-flex;
+  gap: 0.28rem;
+  align-items: center;
+  min-height: 1rem;
+  padding-left: 0.25rem;
+}
+
+.hm-typing span {
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 999px;
+  background: var(--aw-accent);
+  animation: hm-dot 1s infinite ease-in-out;
+}
+
+.hm-typing span:nth-child(2) { animation-delay: 0.15s; }
+.hm-typing span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes hm-dot {
+  0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-3px); }
+}
+
+.hm-status {
+  min-height: 1.1rem;
+  padding: 0 1rem 0.5rem;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  color: var(--aw-ink-muted);
+  background: var(--aw-milk);
+}
+
+.hm-dock.is-open:focus { outline: none; }
+.hm-dock.is-open:focus-within {
+  outline: 2px solid #C8102E;
+  outline-offset: 3px;
+}
+.hm-dock :focus-visible {
+  outline: 2px solid #C8102E;
+  outline-offset: 2px;
+}
+.hm-dock-close:focus-visible {
+  outline-color: #fff;
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .hm-dock {
+    inset-inline: 0;
+    right: 0;
+    left: 0;
+    bottom: var(--keyboard-inset, 0px);
+    width: auto;
+    height: min(85dvh, 620px);
+    max-height: calc(100dvh - var(--keyboard-inset, 0px) - 0.5rem);
+    border-radius: 1.1rem 1.1rem 0 0;
+  }
+  .hm-fab-label { display: none; }
+}
+
+html[data-motion="reduce"] .hm-fab-avatar {
+  animation: none;
+}
+
+html[data-motion="reduce"] .hm-dock,
+html[data-motion="reduce"] .hm-dock.is-open {
+  animation: none;
+  transition: opacity 0.15s ease;
+  transform: none;
+}

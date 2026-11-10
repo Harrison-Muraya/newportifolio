@@ -1,0 +1,18 @@
+<section id="chat" class="page-shell agent-chat">
+  <span class="section-label">Chat</span>
+  <h2 class="section-title">Ask Harrison</h2>
+  <p class="agent-intro">Questions about his work go to his agent. Common asks answer instantly; the rest stream as they generate.</p>
+
+  <div class="agent-panel">
+    <div id="agent-log" class="agent-log" aria-live="polite">
+      <p class="agent-bubble agent-bubble-bot">Ask about a project, a job, or how to get in touch.</p>
+    </div>
+    <form id="agent-form" class="agent-form">
+      {% csrf_token %}
+      <label class="visually-hidden" for="agent-message">Message</label>
+      <textarea id="agent-message" name="message" rows="2" maxlength="4000" required placeholder="Ask something about Harrison"></textarea>
+      <button type="submit" class="agent-send">Send</button>
+    </form>
+    <p id="agent-status" class="agent-status" role="status"></p>
+  </div>
+</section>

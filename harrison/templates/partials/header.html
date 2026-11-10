@@ -1,31 +1,23 @@
 {% load static %}
 <nav id="navbar">
   <div class="nav-inner">
-    <a href="#home" class="nav-logo">H<span>M</span></a>
+    <a href="{% url 'home' %}" class="nav-logo">H<span>M</span></a>
 
     <ul class="nav-links">
-      <li><a href="#home" class="nav-link">Home</a></li>
-      <li><a href="#about" class="nav-link">About</a></li>
-      <li><a href="#experience" class="nav-link">Experience</a></li>
-      <li><a href="#projects" class="nav-link">Projects</a></li>
-      <li><a href="#gallery" class="nav-link">Gallery</a></li>
-      <li><a href="#contact" class="nav-link">Contact</a></li>
+      <li><a href="{% url 'home' %}" class="nav-link{% if request.resolver_match.url_name == 'home' %} is-active{% endif %}" data-i18n="nav_home">Home</a></li>
+      <li><a href="{% url 'work' %}" class="nav-link{% if request.resolver_match.url_name == 'work' or request.resolver_match.url_name == 'work_detail' %} is-active{% endif %}" data-i18n="nav_work">Work</a></li>
+      <li><a href="{% url 'lab' %}" class="nav-link{% if request.resolver_match.url_name == 'lab' %} is-active{% endif %}" data-i18n="nav_lab">Lab</a></li>
+      <li><a href="{% url 'agent_chat' %}" class="nav-link{% if request.resolver_match.url_name == 'agent_chat' %} is-active{% endif %}" data-i18n="nav_chat">Chat</a></li>
+      <li><a href="{% url 'about' %}" class="nav-link{% if request.resolver_match.url_name == 'about' %} is-active{% endif %}" data-i18n="nav_about">About</a></li>
     </ul>
 
     <div class="nav-actions">
-      {% if request.user.is_authenticated %}
-        {% if request.user.is_superuser %}
-          <button onclick="openUploadModal()" class="btn-secondary" style="display:none;" id="navUploadBtn">+ Upload</button>
-          <a href="/dashboard/" class="btn-primary">Dashboard</a>
-        {% endif %}
-        <div class="nav-avatar">{{ request.user.username|first|upper }}</div>
-        <a href="/logout/" class="btn-secondary">Logout</a>
-      {% else %}
-        <a href="/login/" class="btn-secondary">Sign In</a>
-        <a href="/register/" class="btn-primary">Register</a>
-      {% endif %}
-
-      <button class="hamburger" id="mobileMenuBtn" aria-label="Menu">
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button type="button" class="nav-tool lang-btn" data-lang="en" aria-pressed="true">EN</button>
+        <button type="button" class="nav-tool lang-btn" data-lang="sw" aria-pressed="false">SW</button>
+      </div>
+      <button type="button" class="nav-tool" id="palette-open" aria-keyshortcuts="Control+K Meta+K">Search <kbd>Ctrl K</kbd></button>
+      <button class="hamburger" id="mobileMenuBtn" aria-label="Menu" aria-expanded="false" aria-controls="mobileMenu">
         <span></span><span></span><span></span>
       </button>
     </div>
@@ -33,31 +25,21 @@
 </nav>
 
 <div id="mobileMenu">
-  <a href="#home">Home</a>
-  <a href="#about">About</a>
-  <a href="#experience">Experience</a>
-  <a href="#projects">Projects</a>
-  <a href="#gallery">Gallery</a>
-  <a href="#contact">Contact</a>
-  {% if request.user.is_authenticated %}
-    {% if request.user.is_superuser %}
-      <a href="/dashboard/" style="color:var(--accent);">Dashboard</a>
-    {% endif %}
-    <a href="/logout/" style="color:var(--accent);">Logout</a>
-  {% else %}
-    <a href="/login/">Sign In</a>
-    <a href="/register/" style="color:var(--accent);">Register</a>
-  {% endif %}
+  <a href="{% url 'home' %}" class="nav-link{% if request.resolver_match.url_name == 'home' %} is-active{% endif %}" data-i18n="nav_home">Home</a>
+  <a href="{% url 'work' %}" class="nav-link{% if request.resolver_match.url_name == 'work' or request.resolver_match.url_name == 'work_detail' %} is-active{% endif %}" data-i18n="nav_work">Work</a>
+  <a href="{% url 'lab' %}" class="nav-link{% if request.resolver_match.url_name == 'lab' %} is-active{% endif %}" data-i18n="nav_lab">Lab</a>
+  <a href="{% url 'agent_chat' %}" class="nav-link{% if request.resolver_match.url_name == 'agent_chat' %} is-active{% endif %}" data-i18n="nav_chat">Chat</a>
+  <a href="{% url 'about' %}" class="nav-link{% if request.resolver_match.url_name == 'about' %} is-active{% endif %}" data-i18n="nav_about">About</a>
+  <a href="{% url 'about' %}#contact">Contact</a>
 </div>
 
-<script>
-  // Show upload btn for superuser in desktop nav
-  {% if request.user.is_superuser %}
-  const navUploadBtn = document.getElementById('navUploadBtn');
-  if (navUploadBtn) {
-    navUploadBtn.style.display = '';
-    // Keep inline so it shows after media query hides .btn-primary
-    navUploadBtn.style.setProperty('display', 'inline-flex', 'important');
-  }
-  {% endif %}
-</script>
+<style>
+  #mobileMenu a.nav-link.is-active { color: var(--ink); font-weight: 700; }
+  .work-card .proj-title a { color: inherit; text-decoration: none; }
+  .work-card .proj-title a:hover { color: var(--accent); }
+  .featured-links { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-top: 1.75rem; }
+  .work-filters { margin: 1.75rem 0; }
+  .lang-switch { display: inline-flex; gap: 0.15rem; }
+  .lang-btn[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
+  .lead-links .text-link { background: none; border: 0; padding: 0; font: inherit; cursor: pointer; }
+</style>

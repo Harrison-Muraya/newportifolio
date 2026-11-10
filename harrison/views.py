@@ -1,14 +1,29 @@
+import json
+import os
+import urllib.error
+import urllib.request
+
+from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404, StreamingHttpResponse
 from django.views.decorators.http import require_POST, require_http_methods
 from django.db.models import Count
-import json
 
 from .models import GalleryImage, ImageLike, ImageComment, ContactMessage, Project
+from .portfolio_data import CASE_STUDIES, SKILL_GROUPS
+
+PORTFOLIO_SKILLS = [
+    ("PHP & Laravel", 90),
+    ("Python & Django", 85),
+    ("JavaScript & React", 80),
+    ("MySQL & Databases", 85),
+    ("Machine Learning", 75),
+    ("DevOps & Linux", 78),
+]
 
 
 # ─────────────────────────────────────────────
@@ -17,19 +32,185 @@ from .models import GalleryImage, ImageLike, ImageComment, ContactMessage, Proje
 def home(request):
     gallery_images = GalleryImage.objects.all()
     projects = Project.objects.all()
-    skills = [
-            ("PHP & Laravel", 90),
-            ("Python & Django", 85),
-            ("JavaScript & React", 80),
-            ("MySQL & Databases", 85),
-            ("Machine Learning", 75),
-            ("DevOps & Linux", 78),
-        ]
 
     return render(request, 'harrison/home.html', {
         'gallery_images': gallery_images,
         'projects': projects,
-        'skills': skills,
+        'skills': PORTFOLIO_SKILLS,
+        'case_studies': CASE_STUDIES[:3],
+    })
+
+
+def work(request):
+    return render(request, 'harrison/work.html', {
+        'case_studies': CASE_STUDIES,
+    })
+
+
+def work_detail(request, slug):
+    for index, study in enumerate(CASE_STUDIES):
+        if study['slug'] == slug:
+            next_study = CASE_STUDIES[(index + 1) % len(CASE_STUDIES)]
+            return render(request, 'harrison/work_detail.html', {
+                'study': study,
+                'next_study': next_study,
+            })
+    raise Http404('Case study not found.')
+
+
+def lab(request):
+    return render(request, 'harrison/lab.html', {
+        'case_studies': CASE_STUDIES,
+    })
+
+
+AGENT_CHAT_URL = getattr(
+    settings,
+    "AGENT_CHAT_URL",
+    os.environ.get("AGENT_CHAT_URL", "http://197.248.201.233:2020/chat"),
+)
+
+INSTANT_FAQ = (
+    (
+        ("who are you", "your name", "full name", "who is harrison"),
+        "I'm Harrison Ng'ang'a Muraya, a fullstack software developer in Nairobi.",
+    ),
+    (
+        ("contact", "email", "phone", "reach you", "how do i contact"),
+        "Email hezronmuraya9@gmail.com or harrisonmuraya8@gmail.com. Phone +254 726 688 832. LinkedIn linkedin.com/in/muraya-harrison.",
+    ),
+    (
+        ("what have you built", "projects", "github", "built"),
+        "Flagship work includes HostPro, KENA Coin, Ashkey RideDelivery, Sunne, Alpha Loans, and Harrison Agent. GitHub: github.com/Harrison-Muraya.",
+    ),
+    (
+        ("where do you work", "current job", "afripixel"),
+        "I'm a software developer at Afripixel Solution (since July 2026), building with Laravel, Flask, and payment APIs.",
+    ),
+)
+
+
+def instant_faq_reply(message: str) -> str | None:
+    lower = message.lower()
+    for keys, reply in INSTANT_FAQ:
+        if any(key in lower for key in keys):
+            return reply
+    return None
+
+
+def agent_chat(request):
+    return render(request, "harrison/chat.html")
+
+
+@require_POST
+def agent_chat_send(request):
+    try:
+        payload = json.loads(request.body.decode() or "{}")
+    except json.JSONDecodeError:
+        return JsonResponse({"detail": "Send a plain text question."}, status=400)
+    message = str(payload.get("message") or "").strip()
+    if not message or len(message) > 4000:
+        return JsonResponse({"detail": "Write a question first."}, status=400)
+    instant = instant_faq_reply(message)
+    if instant:
+        return JsonResponse({"reply": instant, "agent": "instant"})
+    history = []
+    raw_history = payload.get("history") or []
+    if isinstance(raw_history, list):
+        for turn in raw_history[-12:]:
+            if not isinstance(turn, dict):
+                continue
+            role = turn.get("role")
+            content = str(turn.get("content") or "").strip()
+            if role in ("user", "assistant") and content:
+                history.append({"role": role, "content": content[:4000]})
+    body = json.dumps({"message": message, "history": history, "stream": False}).encode()
+    req = urllib.request.Request(
+        AGENT_CHAT_URL,
+        data=body,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=90) as response:
+            data = json.loads(response.read().decode())
+    except (urllib.error.URLError, TimeoutError, json.JSONDecodeError):
+        return JsonResponse({"detail": "The agent is not reachable right now."}, status=502)
+    reply = str(data.get("reply") or "").strip()
+    if not reply:
+        return JsonResponse({"detail": "The agent returned an empty reply."}, status=502)
+    return JsonResponse({"reply": reply, "agent": data.get("agent", "remote")})
+
+
+@require_POST
+def agent_chat_stream(request):
+    try:
+        payload = json.loads(request.body.decode() or "{}")
+    except json.JSONDecodeError:
+        return JsonResponse({"detail": "Send a plain text question."}, status=400)
+    message = str(payload.get("message") or "").strip()
+    if not message or len(message) > 4000:
+        return JsonResponse({"detail": "Write a question first."}, status=400)
+    instant = instant_faq_reply(message)
+    if instant:
+        def instant_events():
+            yield f"data: {json.dumps({'agent': 'instant'})}\n\n"
+            for word in instant.split(" "):
+                yield f"data: {json.dumps({'token': word + ' '})}\n\n"
+            yield 'data: {"done": true}\n\n'
+        return StreamingHttpResponse(
+            instant_events(),
+            content_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "X-Accel-Buffering": "no",
+            },
+        )
+    history = []
+    raw_history = payload.get("history") or []
+    if isinstance(raw_history, list):
+        for turn in raw_history[-12:]:
+            if not isinstance(turn, dict):
+                continue
+            role = turn.get("role")
+            content = str(turn.get("content") or "").strip()
+            if role in ("user", "assistant") and content:
+                history.append({"role": role, "content": content[:4000]})
+    body = json.dumps({"message": message, "history": history, "stream": True}).encode()
+    req = urllib.request.Request(
+        AGENT_CHAT_URL,
+        data=body,
+        headers={"Content-Type": "application/json", "Accept": "text/event-stream"},
+        method="POST",
+    )
+
+    def remote_events():
+        try:
+            with urllib.request.urlopen(req, timeout=90) as response:
+                while True:
+                    chunk = response.read(1024)
+                    if not chunk:
+                        break
+                    yield chunk.decode(errors="replace")
+        except (urllib.error.URLError, TimeoutError):
+            yield f"data: {json.dumps({'error': 'The agent is not reachable right now.'})}\n\n"
+
+    return StreamingHttpResponse(
+        remote_events(),
+        content_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
+def about(request):
+    gallery_images = GalleryImage.objects.all()
+    return render(request, 'harrison/about.html', {
+        'gallery_images': gallery_images,
+        'skills': PORTFOLIO_SKILLS,
+        'skill_groups': SKILL_GROUPS,
     })
 
 
