@@ -61,14 +61,25 @@
 
     if (hooks.onStart) hooks.onStart();
 
-    return fetch("/chat/stream/", {
+    // Prefer the public agent URL from the browser (CORS). This avoids
+    // PythonAnywhere free-account outbound blocks to a home IP.
+    var endpoint = window.AGENT_CHAT_URL || "/chat/stream/";
+    var direct = endpoint.indexOf("http") === 0;
+    var headers = {
+      "Content-Type": "application/json",
+      Accept: "text/event-stream"
+    };
+    if (!direct) headers["X-CSRFToken"] = csrfToken(form);
+    var payload = {
+      message: message,
+      history: history || []
+    };
+    if (direct) payload.stream = true;
+
+    return fetch(endpoint, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "text/event-stream",
-        "X-CSRFToken": csrfToken(form)
-      },
-      body: JSON.stringify({ message: message, history: history || [] })
+      headers: headers,
+      body: JSON.stringify(payload)
     }).then(function (res) {
       if (!res.ok || !res.body) {
         return res.json().then(function (data) {

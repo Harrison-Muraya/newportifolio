@@ -119,6 +119,7 @@ class PublicPageContractTests(TestCase):
         self.assertContains(home, "Ask Harrison")
         self.assertContains(home, 'id="hm-fab"')
         self.assertContains(home, "agent-widget.js")
+        self.assertContains(home, "AGENT_CHAT_URL")
         self.assertContains(chat, 'id="agent-form"')
         self.assertContains(chat, "Chat")
 

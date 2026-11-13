@@ -46,6 +46,7 @@
     const IS_AUTHENTICATED = {{ request.user.is_authenticated|yesno:"true,false" }};
     const IS_SUPERUSER = {{ request.user.is_superuser|yesno:"true,false" }};
     const USERNAME = "{{ request.user.username|default:'' }}";
+    window.AGENT_CHAT_URL = "{{ AGENT_CHAT_URL|default:'http://197.248.201.233:2020/chat'|escapejs }}";
     window.portfolioTrack = function (name, detail) {
       document.dispatchEvent(new CustomEvent('portfolio:track', {
         detail: { name: name, detail: detail || {} }
@@ -57,8 +58,8 @@
   <script src="{% static 'harrison/js/interact.js' %}?v=20261110h" defer></script>
   <script src="{% static 'harrison/js/lab.js' %}?v=20261110h" defer></script>
   <script src="{% static 'harrison/js/i18n.js' %}?v=20261110h" defer></script>
-  <script src="{% static 'harrison/js/harrison-chat.js' %}?v=20261110h" defer></script>
-  <script src="{% static 'harrison/js/agent-widget.js' %}?v=20261110h" defer></script>
-  <script src="{% static 'harrison/js/agent-chat.js' %}?v=20261110h" defer></script>
+  <script src="{% static 'harrison/js/harrison-chat.js' %}?v=20261114cors" defer></script>
+  <script src="{% static 'harrison/js/agent-widget.js' %}?v=20261114cors" defer></script>
+  <script src="{% static 'harrison/js/agent-chat.js' %}?v=20261114cors" defer></script>
 </body>
 </html>
