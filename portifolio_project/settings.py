@@ -9,10 +9,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-# Prefer a local SSH tunnel when public NAT for :2020 is down.
+# Must be HTTPS when the portfolio is served on HTTPS (mixed-content block otherwise).
+# Quick Cloudflare tunnel to the home agent; override with env AGENT_CHAT_URL when it rotates.
 AGENT_CHAT_URL = os.environ.get(
     "AGENT_CHAT_URL",
-    "http://197.248.201.233:2020/chat",
+    "https://supervisors-moral-dive-program.trycloudflare.com/chat",
 )
 
 INSTALLED_APPS = [

@@ -67,7 +67,10 @@ def lab(request):
 AGENT_CHAT_URL = getattr(
     settings,
     "AGENT_CHAT_URL",
-    os.environ.get("AGENT_CHAT_URL", "http://197.248.201.233:2020/chat"),
+    os.environ.get(
+        "AGENT_CHAT_URL",
+        "https://supervisors-moral-dive-program.trycloudflare.com/chat",
+    ),
 )
 
 INSTANT_FAQ = (
