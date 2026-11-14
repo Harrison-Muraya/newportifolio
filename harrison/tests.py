@@ -1,7 +1,11 @@
+import io
 import json
+import urllib.error
+from email.message import Message
 from unittest.mock import MagicMock, patch
 
-from django.test import TestCase
+from django.contrib.auth.models import User
+from django.test import TestCase, override_settings
 
 
 def case_study_slugs(case_studies):
@@ -165,3 +169,141 @@ class PublicPageContractTests(TestCase):
     def test_register(self):
         response = self.client.get("/register/")
         self.assertEqual(response.status_code, 200)
+
+    def test_public_pages_hide_the_training_inbox(self):
+        for path in ("/", "/chat/", "/about/", "/work/", "/lab/"):
+            response = self.client.get(path)
+            self.assertNotContains(response, "/dashboard/training/")
+            self.assertNotContains(response, "Training inbox")
+
+
+def _http_error(code):
+    return urllib.error.HTTPError(
+        "https://agent.example/learn/inbox",
+        code,
+        "error",
+        Message(),
+        io.BytesIO(b""),
+    )
+
+
+@override_settings(
+    TEACH_TOKEN="secret-teach-token",
+    AGENT_CHAT_URL="https://agent.example/chat",
+)
+class TrainingInboxTests(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            "harrison", "h@example.com", "test-pass-123"
+        )
+        self.member = User.objects.create_user(
+            "guest", "g@example.com", "test-pass-123"
+        )
+
+    def test_anonymous_visitor_is_sent_to_login(self):
+        response = self.client.get("/dashboard/training/")
+        self.assertRedirects(response, "/login/?next=/dashboard/training/")
+
+    def test_signed_in_visitor_cannot_open_the_inbox(self):
+        self.client.force_login(self.member)
+        response = self.client.get("/dashboard/training/")
+        self.assertRedirects(response, "/")
+        reward = self.client.post(
+            "/dashboard/training/reward/",
+            data=json.dumps({"chat_id": "c1", "action": "approve"}),
+            content_type="application/json",
+        )
+        self.assertRedirects(reward, "/")
+
+    def test_public_footer_hides_training_until_superuser(self):
+        home = self.client.get("/")
+        self.assertNotContains(home, "/dashboard/training/")
+        self.client.force_login(self.member)
+        home = self.client.get("/")
+        self.assertNotContains(home, "/dashboard/training/")
+        self.client.force_login(self.superuser)
+        home = self.client.get("/")
+        self.assertContains(home, "/dashboard/training/")
+
+    def test_stub_when_agent_inbox_is_missing(self):
+        self.client.force_login(self.superuser)
+        with patch("urllib.request.urlopen", side_effect=_http_error(404)):
+            response = self.client.get("/dashboard/training/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Training inbox")
+        self.assertContains(response, "not connected yet")
+        self.assertNotContains(response, "secret-teach-token")
+        page = response.content.decode()
+        self.assertNotIn("logged", page.lower())
+        self.assertNotIn("recorded", page.lower())
+
+    def test_superuser_sees_clusters_from_the_agent(self):
+        self.client.force_login(self.superuser)
+        payload = json.dumps({
+            "clusters": [{
+                "chat_id": "c-email",
+                "label": "email / contact",
+                "needs_training_score": 0.82,
+                "count": 3,
+                "questions": ["what is your email", "how do I reach you"],
+                "answer": "Email hezronmuraya9@gmail.com",
+                "signals": ["frequency"],
+            }]
+        }).encode()
+        remote = MagicMock()
+        remote.read.return_value = payload
+        remote.__enter__.return_value = remote
+        with patch("urllib.request.urlopen", return_value=remote) as opener:
+            response = self.client.get("/dashboard/training/")
+        self.assertContains(response, "email / contact")
+        self.assertContains(response, "Score 0.82")
+        self.assertContains(response, "how do I reach you")
+        self.assertNotContains(response, "secret-teach-token")
+        sent = opener.call_args[0][0]
+        self.assertEqual(sent.full_url, "https://agent.example/learn/inbox")
+        self.assertEqual(sent.get_header("X-teach-token"), "secret-teach-token")
+        self.assertNotIn("secret-teach-token", sent.full_url)
+
+    def test_reward_proxy_keeps_the_token_on_the_server(self):
+        self.client.force_login(self.superuser)
+        remote = MagicMock()
+        remote.read.return_value = b'{"ok": true}'
+        remote.__enter__.return_value = remote
+        with patch("urllib.request.urlopen", return_value=remote) as opener:
+            response = self.client.post(
+                "/dashboard/training/reward/",
+                data=json.dumps({
+                    "chat_id": "c-email",
+                    "action": "edit",
+                    "answer": "Email hezronmuraya9@gmail.com",
+                    "token": "secret-teach-token",
+                }),
+                content_type="application/json",
+            )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["ok"], True)
+        self.assertNotIn("secret-teach-token", response.content.decode())
+        sent = opener.call_args[0][0]
+        self.assertEqual(sent.full_url, "https://agent.example/learn/reward")
+        self.assertEqual(sent.get_header("X-teach-token"), "secret-teach-token")
+        forwarded = json.loads(sent.data.decode())
+        self.assertEqual(forwarded["action"], "edit")
+        self.assertEqual(forwarded["chat_id"], "c-email")
+        self.assertEqual(forwarded["item_id"], "c-email")
+        self.assertNotIn("token", forwarded)
+
+    def test_reward_stubs_when_agent_route_is_missing(self):
+        self.client.force_login(self.superuser)
+        with patch("urllib.request.urlopen", side_effect=_http_error(404)):
+            response = self.client.post(
+                "/dashboard/training/reward/",
+                data=json.dumps({"item_id": "c1", "action": "approve"}),
+                content_type="application/json",
+            )
+        self.assertEqual(response.status_code, 503)
+        self.assertTrue(response.json()["stub"])
+
+    def test_chat_page_has_no_training_inbox_copy(self):
+        response = self.client.get("/chat/")
+        self.assertNotContains(response, "Training inbox")
+        self.assertNotContains(response, "reward")

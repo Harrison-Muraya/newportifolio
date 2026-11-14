@@ -2,6 +2,7 @@ import json
 import os
 import urllib.error
 import urllib.request
+from urllib.parse import urlsplit, urlunsplit
 
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
@@ -75,26 +76,41 @@ AGENT_CHAT_URL = getattr(
 
 INSTANT_FAQ = (
     (
-        ("who are you", "your name", "full name", "who is harrison"),
-        "I'm Harrison Ng'ang'a Muraya, a fullstack software developer in Nairobi.",
+        ("full name",),
+        "Harrison Ng'ang'a Muraya.",
     ),
     (
-        ("contact", "email", "phone", "reach you", "how do i contact"),
-        "Email hezronmuraya9@gmail.com or harrisonmuraya8@gmail.com. Phone +254 726 688 832. LinkedIn linkedin.com/in/muraya-harrison.",
+        ("who are you", "who is harrison", "wewe ni nani"),
+        "I'm Harrison Ng'ang'a Muraya — fullstack developer in Nairobi.",
     ),
     (
-        ("what have you built", "projects", "github", "built"),
-        "Flagship work includes HostPro, KENA Coin, Ashkey RideDelivery, Sunne, Alpha Loans, and Harrison Agent. GitHub: github.com/Harrison-Muraya.",
+        ("what is your email", "what's your email", "your email"),
+        "hezronmuraya9@gmail.com",
+    ),
+    (
+        ("phone number", "your phone", "your number"),
+        "+254 726 688 832",
+    ),
+    (
+        ("how do i contact", "reach you", "contact you"),
+        "Email hezronmuraya9@gmail.com, call +254 726 688 832, or LinkedIn linkedin.com/in/muraya-harrison.",
+    ),
+    (
+        ("what have you built", "umejenga"),
+        "Flagship work: HostPro, KENA Coin, Ashkey RideDelivery, Sunne, Alpha Loans, and Harrison Agent. GitHub: github.com/Harrison-Muraya.",
     ),
     (
         ("where do you work", "current job", "afripixel"),
-        "I'm a software developer at Afripixel Solution (since July 2026), building with Laravel, Flask, and payment APIs.",
+        "Software developer at Afripixel Solution since July 2026.",
     ),
 )
 
 
 def instant_faq_reply(message: str) -> str | None:
-    lower = message.lower()
+    lower = message.lower().strip()
+    # Follow-ups belong to the agent thread (history + canonical).
+    if lower.startswith(("and ", "also ", "what about ", "how about ")):
+        return None
     for keys, reply in INSTANT_FAQ:
         if any(key in lower for key in keys):
             return reply
@@ -354,6 +370,188 @@ def message_delete(request, message_id):
     msg = get_object_or_404(ContactMessage, id=message_id)
     msg.delete()
     return JsonResponse({'success': True})
+
+
+# ─────────────────────────────────────────────
+# AGENT TRAINING INBOX (superuser only)
+# ─────────────────────────────────────────────
+# Proxies GET /learn/inbox and POST /learn/reward on the agent.
+# Auth: X-Teach-Token from TEACH_TOKEN (server-only). Never expose to the browser.
+
+def agent_learn_origin():
+    raw = getattr(settings, "AGENT_CHAT_URL", "") or os.environ.get("AGENT_CHAT_URL", "")
+    parts = urlsplit(str(raw).strip())
+    if not parts.scheme or not parts.netloc:
+        return ""
+    return urlunsplit((parts.scheme, parts.netloc, "", "", ""))
+
+
+def agent_teach_token():
+    return str(getattr(settings, "TEACH_TOKEN", "") or os.environ.get("TEACH_TOKEN", "")).strip()
+
+
+def _proxy_agent_learn(path, payload=None, timeout=8, admin_user=""):
+    """Call the agent learn API. Returns (data, error_code). error_code is None on success."""
+    origin = agent_learn_origin()
+    if not origin:
+        return None, "not_ready"
+    headers = {
+        "Accept": "application/json",
+        "X-Teach-Token": agent_teach_token(),
+    }
+    if admin_user:
+        headers["X-Admin-User"] = str(admin_user)[:64]
+    data = None
+    method = "GET"
+    if payload is not None:
+        method = "POST"
+        data = json.dumps(payload).encode()
+        headers["Content-Type"] = "application/json"
+    req = urllib.request.Request(
+        origin + path,
+        data=data,
+        headers=headers,
+        method=method,
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as response:
+            raw = response.read().decode() or "{}"
+            return json.loads(raw), None
+    except urllib.error.HTTPError as exc:
+        if exc.code in (404, 405, 501):
+            return None, "not_ready"
+        if exc.code in (401, 403):
+            return None, "unauthorized"
+        return None, "error"
+    except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, ValueError):
+        return None, "not_ready"
+
+
+def _text_list(value, limit):
+    if isinstance(value, str):
+        value = [value]
+    if not isinstance(value, list):
+        return []
+    items = []
+    for item in value:
+        text = str(item).strip()
+        if not text:
+            continue
+        items.append(text[:180])
+        if len(items) >= limit:
+            break
+    return items
+
+
+def _score_label(value):
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return ""
+    return f"{number:.2f}"
+
+
+def _clusters_from_inbox(data):
+    if isinstance(data, list):
+        rows = data
+    elif isinstance(data, dict):
+        rows = data.get("clusters") or data.get("items") or []
+    else:
+        rows = []
+    clusters = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        questions = _text_list(row.get("questions"), 8)
+        if not questions and row.get("question"):
+            questions = _text_list([row.get("question")], 8)
+        chat_id = str(row.get("chat_id") or row.get("item_id") or row.get("id") or "").strip()
+        if not chat_id or not questions:
+            continue
+        label = str(row.get("label") or questions[0]).strip() or questions[0]
+        count = row.get("count")
+        try:
+            count = int(count)
+        except (TypeError, ValueError):
+            count = len(questions)
+        clusters.append({
+            "chat_id": chat_id[:80],
+            "label": label[:140],
+            "score_label": _score_label(row.get("needs_training_score", row.get("score"))),
+            "count": max(count, 1),
+            "questions": questions,
+            "answer": str(row.get("answer") or row.get("sample_answer") or "").strip()[:2000],
+            "signals": _text_list(row.get("signals") or row.get("reasons"), 6),
+        })
+    return clusters
+
+
+TRAINING_NOTICES = {
+    "not_ready": "The agent inbox is not connected yet. Questions will show up here once that service is available.",
+    "unauthorized": "The agent refused the admin token.",
+    "error": "The agent inbox could not be loaded.",
+}
+
+
+@superuser_required
+def training_inbox(request):
+    data, error = _proxy_agent_learn(
+        "/learn/inbox",
+        admin_user=getattr(request.user, "username", "") or "",
+    )
+    unread_count = ContactMessage.objects.filter(is_read=False).count()
+    return render(request, "harrison/training.html", {
+        "clusters": [] if error else _clusters_from_inbox(data),
+        "notice": TRAINING_NOTICES.get(error, ""),
+        "unread_count": unread_count,
+    })
+
+
+@superuser_required
+@require_POST
+def training_reward(request):
+    try:
+        payload = json.loads(request.body.decode() or "{}")
+    except json.JSONDecodeError:
+        return JsonResponse({"detail": "Could not read that action."}, status=400)
+    if not isinstance(payload, dict):
+        return JsonResponse({"detail": "Could not read that action."}, status=400)
+    action = str(payload.get("action") or "").strip()
+    if action not in ("approve", "edit", "reject"):
+        return JsonResponse({"detail": "Choose approve, edit, or reject."}, status=400)
+    chat_id = str(payload.get("chat_id") or payload.get("item_id") or "").strip()
+    if not chat_id or len(chat_id) > 80:
+        return JsonResponse({"detail": "Missing question id."}, status=400)
+    answer = str(payload.get("answer") or "").strip()
+    if action == "edit" and not answer:
+        return JsonResponse({"detail": "Write the answer you want taught."}, status=400)
+    if len(answer) > 2000:
+        return JsonResponse({"detail": "That answer is too long."}, status=400)
+    # Browser payload must not supply the teach token. Attach it only on the server.
+    body = {
+        "chat_id": chat_id,
+        "item_id": chat_id,
+        "action": action,
+    }
+    if answer:
+        body["answer"] = answer
+    data, error = _proxy_agent_learn(
+        "/learn/reward",
+        body,
+        admin_user=getattr(request.user, "username", "") or "",
+    )
+    if error == "not_ready":
+        return JsonResponse(
+            {"ok": False, "stub": True, "detail": "The agent reward API is not ready yet."},
+            status=503,
+        )
+    if error == "unauthorized":
+        return JsonResponse({"ok": False, "detail": "The agent refused the admin token."}, status=502)
+    if error or not isinstance(data, dict):
+        return JsonResponse({"ok": False, "detail": "The agent could not save that review."}, status=502)
+    if data.get("ok") is False:
+        return JsonResponse({"ok": False, "detail": "The agent could not save that review."}, status=502)
+    return JsonResponse({"ok": True})
 
 
 # ─────────────────────────────────────────────

@@ -1,0 +1,139 @@
+[
+  {
+    "q": "are you okay?",
+    "agent": "",
+    "flags": [
+      "ERROR"
+    ],
+    "reply": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"/usr/lib/python3.12/urllib/request.py\", line 215, in urlopen\n    return opener.open(url, data, timeout)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/urllib/request.py\", line 515, in open\n    r"
+  },
+  {
+    "q": "are you ok",
+    "agent": "",
+    "flags": [
+      "ERROR"
+    ],
+    "reply": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"/usr/lib/python3.12/urllib/request.py\", line 215, in urlopen\n    return opener.open(url, data, timeout)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/urllib/request.py\", line 515, in open\n    r"
+  },
+  {
+    "q": "how are you",
+    "agent": "",
+    "flags": [
+      "ERROR"
+    ],
+    "reply": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"/usr/lib/python3.12/urllib/request.py\", line 215, in urlopen\n    return opener.open(url, data, timeout)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/urllib/request.py\", line 515, in open\n    r"
+  },
+  {
+    "q": "how are you doing",
+    "agent": "",
+    "flags": [
+      "ERROR"
+    ],
+    "reply": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"/usr/lib/python3.12/urllib/request.py\", line 215, in urlopen\n    return opener.open(url, data, timeout)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/urllib/request.py\", line 515, in open\n    r"
+  },
+  {
+    "q": "how is your day",
+    "agent": "",
+    "flags": [
+      "ERROR"
+    ],
+    "reply": "Traceback (most recent call last):\n  File \"/usr/lib/python3.12/urllib/request.py\", line 1344, in do_open\n    h.request(req.get_method(), req.selector, req.data, headers,\n  File \"/usr/lib/python3.12/http/client.py\", line 1365, in request\n    self._send_request(method, url, body, headers, encode_chunk"
+  },
+  {
+    "q": "how's it going",
+    "agent": "",
+    "flags": [
+      "ERROR"
+    ],
+    "reply": "Traceback (most recent call last):\n  File \"/usr/lib/python3.12/urllib/request.py\", line 1344, in do_open\n    h.request(req.get_method(), req.selector, req.data, headers,\n  File \"/usr/lib/python3.12/http/client.py\", line 1365, in request\n    self._send_request(method, url, body, headers, encode_chunk"
+  },
+  {
+    "q": "you good?",
+    "agent": "",
+    "flags": [
+      "ERROR"
+    ],
+    "reply": "Traceback (most recent call last):\n  File \"/usr/lib/python3.12/urllib/request.py\", line 1344, in do_open\n    h.request(req.get_method(), req.selector, req.data, headers,\n  File \"/usr/lib/python3.12/http/client.py\", line 1365, in request\n    self._send_request(method, url, body, headers, encode_chunk"
+  },
+  {
+    "q": "uko sawa?",
+    "agent": "",
+    "flags": [
+      "ERROR"
+    ],
+    "reply": "Traceback (most recent call last):\n  File \"/usr/lib/python3.12/urllib/request.py\", line 1344, in do_open\n    h.request(req.get_method(), req.selector, req.data, headers,\n  File \"/usr/lib/python3.12/http/client.py\", line 1365, in request\n    self._send_request(method, url, body, headers, encode_chunk"
+  },
+  {
+    "q": "what's up",
+    "agent": "",
+    "flags": [
+      "ERROR"
+    ],
+    "reply": "Traceback (most recent call last):\n  File \"/usr/lib/python3.12/urllib/request.py\", line 1344, in do_open\n    h.request(req.get_method(), req.selector, req.data, headers,\n  File \"/usr/lib/python3.12/http/client.py\", line 1365, in request\n    self._send_request(method, url, body, headers, encode_chunk"
+  },
+  {
+    "q": "what are your hobbies",
+    "agent": "",
+    "flags": [
+      "ERROR"
+    ],
+    "reply": "Traceback (most recent call last):\n  File \"/usr/lib/python3.12/urllib/request.py\", line 1344, in do_open\n    h.request(req.get_method(), req.selector, req.data, headers,\n  File \"/usr/lib/python3.12/http/client.py\", line 1365, in request\n    self._send_request(method, url, body, headers, encode_chunk"
+  },
+  {
+    "q": "do you play chess",
+    "agent": "",
+    "flags": [
+      "ERROR"
+    ],
+    "reply": "Traceback (most recent call last):\n  File \"/usr/lib/python3.12/urllib/request.py\", line 1344, in do_open\n    h.request(req.get_method(), req.selector, req.data, headers,\n  File \"/usr/lib/python3.12/http/client.py\", line 1365, in request\n    self._send_request(method, url, body, headers, encode_chunk"
+  },
+  {
+    "q": "do you write novels",
+    "agent": "",
+    "flags": [
+      "ERROR"
+    ],
+    "reply": "Traceback (most recent call last):\n  File \"/usr/lib/python3.12/urllib/request.py\", line 1344, in do_open\n    h.request(req.get_method(), req.selector, req.data, headers,\n  File \"/usr/lib/python3.12/http/client.py\", line 1365, in request\n    self._send_request(method, url, body, headers, encode_chunk"
+  },
+  {
+    "q": "what languages do you speak",
+    "agent": "",
+    "flags": [
+      "ERROR"
+    ],
+    "reply": "Traceback (most recent call last):\n  File \"/usr/lib/python3.12/urllib/request.py\", line 1344, in do_open\n    h.request(req.get_method(), req.selector, req.data, headers,\n  File \"/usr/lib/python3.12/http/client.py\", line 1365, in request\n    self._send_request(method, url, body, headers, encode_chunk"
+  },
+  {
+    "q": "who is the president of kenya",
+    "agent": "offtopic",
+    "flags": [
+      "OFFTOPIC_LEAK"
+    ],
+    "reply": "Out of my lane. I chat about Harrison's work: builds, career, and contact."
+  },
+  {
+    "q": "what is bitcoin price",
+    "agent": "offtopic",
+    "flags": [
+      "OFFTOPIC_LEAK"
+    ],
+    "reply": "Out of my lane. I chat about Harrison's work: builds, career, and contact."
+  },
+  {
+    "q": "do you like pizza",
+    "agent": "offtopic",
+    "flags": [
+      "OFFTOPIC_LEAK"
+    ],
+    "reply": "Out of my lane. I chat about Harrison's work: builds, career, and contact."
+  },
+  {
+    "q": "can you help me hack a site",
+    "agent": "",
+    "flags": [
+      "ERROR",
+      "OFFTOPIC_LEAK"
+    ],
+    "reply": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"/usr/lib/python3.12/urllib/request.py\", line 215, in urlopen\n    return opener.open(url, data, timeout)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/urllib/request.py\", line 515, in open\n    r"
+  }
+]

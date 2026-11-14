@@ -32,6 +32,10 @@ urlpatterns = [
     path('dashboard/inbox/<int:message_id>/toggle-read/', views.message_toggle_read, name='message_toggle_read'),
     path('dashboard/inbox/<int:message_id>/delete/', views.message_delete, name='message_delete'),
 
+    # Agent training inbox (superuser)
+    path('dashboard/training/', views.training_inbox, name='training_inbox'),
+    path('dashboard/training/reward/', views.training_reward, name='training_reward'),
+
     # Projects CRUD
     path('dashboard/projects/', views.project_list, name='project_list'),
     path('dashboard/projects/create/', views.project_create, name='project_create'),

@@ -1,25 +1,59 @@
 (function () {
+  // Canonical facts — must match agent conversation.CANONICAL wording.
   var FAQ = [
     {
-      keys: ["who are you", "your name", "full name", "who is harrison", "wewe ni nani"],
-      reply: "I'm Harrison Ng'ang'a Muraya, a fullstack software developer in Nairobi."
+      keys: ["full name"],
+      reply: "Harrison Ng'ang'a Muraya."
     },
     {
-      keys: ["contact", "email", "phone", "reach you", "how do i contact", "kukuwasiliana", "wasiliana"],
-      reply: "Email hezronmuraya9@gmail.com or harrisonmuraya8@gmail.com. Phone +254 726 688 832. LinkedIn linkedin.com/in/muraya-harrison."
+      keys: ["who are you", "who is harrison", "wewe ni nani"],
+      reply: "I'm Harrison Ng'ang'a Muraya — fullstack developer in Nairobi."
     },
     {
-      keys: ["what have you built", "projects", "github", "built", "umejenga"],
-      reply: "Flagship work includes HostPro, KENA Coin, Ashkey RideDelivery, Sunne, Alpha Loans, and Harrison Agent. GitHub: github.com/Harrison-Muraya."
+      keys: ["your email", "what is your email", "what's your email"],
+      reply: "hezronmuraya9@gmail.com"
+    },
+    {
+      keys: ["your phone", "phone number", "your number"],
+      reply: "+254 726 688 832"
+    },
+    {
+      keys: ["how do i contact", "contact you", "kukuwasiliana", "wasiliana", "reach you"],
+      reply: "Email hezronmuraya9@gmail.com, call +254 726 688 832, or LinkedIn linkedin.com/in/muraya-harrison."
+    },
+    {
+      keys: ["what have you built", "projects", "umejenga"],
+      reply: "Flagship work: HostPro, KENA Coin, Ashkey RideDelivery, Sunne, Alpha Loans, and Harrison Agent. GitHub: github.com/Harrison-Muraya."
+    },
+    {
+      keys: ["github"],
+      reply: "github.com/Harrison-Muraya"
     },
     {
       keys: ["where do you work", "current job", "afripixel", "unafanya kazi"],
-      reply: "I'm a software developer at Afripixel Solution (since July 2026), building with Laravel, Flask, and payment APIs."
+      reply: "Software developer at Afripixel Solution since July 2026."
+    },
+    {
+      keys: ["are you available", "can i hire", "hire you", "freelance"],
+      reply: "I take interesting builds — especially payments and APIs. Email hezronmuraya9@gmail.com with what you're shipping."
     }
   ];
 
+  // Greetings + follow-ups go to the agent so history/canonical stay consistent.
   function matchLocal(message) {
-    var lower = String(message || "").toLowerCase();
+    var lower = String(message || "").toLowerCase().trim().replace(/[!?.]+$/g, "");
+    if (
+      /^(hi+|hello|hey|sasa|mambo|niaje|habari|thanks|thank you|asante)$/.test(lower)
+    ) {
+      return null;
+    }
+    // "and your email?", "what about phone?" — never answer from FAQ substring keys.
+    if (
+      /^(and|also|what about|how about)\b/.test(lower) ||
+      /^(and\s+)?(email|mail|phone|number|linkedin|github|stack)\s*$/.test(lower)
+    ) {
+      return null;
+    }
     for (var i = 0; i < FAQ.length; i++) {
       for (var j = 0; j < FAQ[i].keys.length; j++) {
         if (lower.indexOf(FAQ[i].keys[j]) !== -1) return FAQ[i].reply;

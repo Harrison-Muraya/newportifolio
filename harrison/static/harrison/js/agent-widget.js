@@ -95,7 +95,7 @@
   function pushHistory(message, reply) {
     history.push({ role: "user", content: message });
     history.push({ role: "assistant", content: reply });
-    history = history.slice(-12);
+    history = history.slice(-16);
   }
 
   function setSending(on) {

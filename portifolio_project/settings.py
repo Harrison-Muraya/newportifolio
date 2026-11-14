@@ -3,6 +3,16 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Private env file on the host (not in git). Used on PythonAnywhere for TEACH_TOKEN.
+_SECRETS = BASE_DIR / ".pa_secrets.env"
+if _SECRETS.is_file():
+    for _line in _SECRETS.read_text(encoding="utf-8").splitlines():
+        _line = _line.strip()
+        if not _line or _line.startswith("#") or "=" not in _line:
+            continue
+        _key, _val = _line.split("=", 1)
+        os.environ.setdefault(_key.strip(), _val.strip().strip('"').strip("'"))
+
 SECRET_KEY = 'django-insecure-uuc2z_%w%&8%dx5uwj98^x!%#ws53eawe3m^xn+wn90u_$@_ga'
 
 DEBUG = True
@@ -15,6 +25,8 @@ AGENT_CHAT_URL = os.environ.get(
     "AGENT_CHAT_URL",
     "https://supervisors-moral-dive-program.trycloudflare.com/chat",
 )
+# Server-only secret for the agent learn API. Never put this in a template or JavaScript.
+TEACH_TOKEN = os.environ.get("TEACH_TOKEN", "")
 
 INSTALLED_APPS = [
     'django.contrib.admin',

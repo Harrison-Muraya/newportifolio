@@ -15,6 +15,7 @@
       {% if request.user.is_authenticated %}
         {% if request.user.is_superuser %}
           <a href="{% url 'dashboard' %}">Dashboard</a>
+          <a href="{% url 'training_inbox' %}">Training</a>
         {% endif %}
         <a href="{% url 'logout' %}">Logout</a>
       {% else %}

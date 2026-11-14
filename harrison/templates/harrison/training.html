@@ -1,0 +1,199 @@
+{% extends 'harrison/dashboard_base.html' %}
+
+{% block page_title %}Training inbox{% endblock %}
+{% block topbar_title %}Training inbox{% endblock %}
+{% block nav_training %}active{% endblock %}
+
+{% block content %}
+<style>
+  .train-lead {
+    max-width: 40rem;
+    margin-bottom: 1.25rem;
+    color: var(--dash-muted);
+    line-height: 1.55;
+    font-size: 0.9375rem;
+  }
+  .train-list { display: flex; flex-direction: column; gap: 1rem; }
+  .train-card {
+    background: var(--dash-surface);
+    border: 1.5px solid var(--dash-border);
+    border-radius: 0.875rem;
+    padding: 1.25rem 1.5rem;
+  }
+  .train-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  .train-card h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--dash-ink);
+  }
+  .train-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: center;
+    margin-top: 0.45rem;
+  }
+  .train-count {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--dash-muted);
+  }
+  .train-questions {
+    margin: 0.9rem 0 0;
+    padding-left: 1.1rem;
+    color: var(--dash-text);
+    font-size: 0.9375rem;
+  }
+  .train-questions li + li { margin-top: 0.25rem; }
+  .train-answer {
+    margin-top: 0.9rem;
+    padding: 0.75rem 1rem;
+    background: var(--dash-bg);
+    border-radius: 0.5rem;
+    color: var(--dash-text);
+    white-space: pre-wrap;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+  .train-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .train-edit { margin-top: 1rem; }
+  .train-edit[hidden] { display: none; }
+</style>
+
+<p class="train-lead">Review new and weak questions. Approve a good answer, edit one you want taught, or reject a bad one. Visitors do not see this page.</p>
+
+{% if notice %}
+<div class="dash-table-wrap">
+  <div class="empty-state">
+    <p>{{ notice }}</p>
+  </div>
+</div>
+{% elif not clusters %}
+<div class="dash-table-wrap">
+  <div class="empty-state">
+    <p>Nothing waiting for review.</p>
+  </div>
+</div>
+{% else %}
+<div class="train-list" id="train-list">
+  {% for cluster in clusters %}
+  <article class="train-card" data-chat-id="{{ cluster.chat_id }}">
+    <div class="train-head">
+      <div>
+        <h2>{{ cluster.label }}</h2>
+        <div class="train-meta">
+          {% if cluster.score_label %}
+          <span class="badge badge-new">Score {{ cluster.score_label }}</span>
+          {% endif %}
+          <span class="train-count">{{ cluster.count }} similar</span>
+          {% for signal in cluster.signals %}
+          <span class="badge badge-read">{{ signal }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <ul class="train-questions">
+      {% for question in cluster.questions %}
+      <li>{{ question }}</li>
+      {% endfor %}
+    </ul>
+    {% if cluster.answer %}
+    <div class="train-answer">{{ cluster.answer }}</div>
+    {% endif %}
+    <div class="train-actions">
+      <button type="button" class="action-btn action-btn-view" data-reward="approve">Approve</button>
+      <button type="button" class="action-btn action-btn-edit" data-reward="edit-open">Edit &amp; teach</button>
+      <button type="button" class="action-btn action-btn-delete" data-reward="reject">Reject</button>
+    </div>
+    <div class="train-edit" hidden>
+      <label class="dash-label" for="train-answer-{{ forloop.counter }}">Answer to teach</label>
+      <textarea id="train-answer-{{ forloop.counter }}" class="dash-textarea">{{ cluster.answer }}</textarea>
+      <div class="train-actions">
+        <button type="button" class="dash-btn-submit" data-reward="edit">Save &amp; teach</button>
+        <button type="button" class="dash-btn-cancel" data-reward="edit-close">Cancel</button>
+      </div>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const TRAIN_REWARD_URL = "{% url 'training_reward' %}";
+
+async function sendReward(card, action) {
+  const chatId = card.getAttribute("data-chat-id");
+  const body = { chat_id: chatId, action: action };
+  if (action === "edit") {
+    const answer = card.querySelector("textarea").value.trim();
+    if (!answer) {
+      showDashToast("Write the answer you want taught.");
+      return;
+    }
+    body.answer = answer;
+  }
+  const buttons = card.querySelectorAll("button");
+  buttons.forEach((button) => { button.disabled = true; });
+  try {
+    const res = await fetch(TRAIN_REWARD_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": CSRF_TOKEN,
+      },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) {
+      showDashToast(data.detail || "Could not save that review.");
+      buttons.forEach((button) => { button.disabled = false; });
+      return;
+    }
+    showDashToast("Saved");
+    card.remove();
+    if (!document.querySelector(".train-card")) {
+      document.getElementById("train-list").innerHTML = '<div class="dash-table-wrap"><div class="empty-state"><p>Nothing waiting for review.</p></div></div>';
+    }
+  } catch (error) {
+    showDashToast("Could not save that review.");
+    buttons.forEach((button) => { button.disabled = false; });
+  }
+}
+
+document.getElementById("train-list")?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-reward]");
+  if (!button) return;
+  const card = button.closest(".train-card");
+  const action = button.getAttribute("data-reward");
+  if (action === "edit-open") {
+    card.querySelector(".train-edit").hidden = false;
+    return;
+  }
+  if (action === "edit-close") {
+    card.querySelector(".train-edit").hidden = true;
+    return;
+  }
+  if (action === "reject") {
+    openConfirm("Reject answer", "Similar questions should skip this answer.", () => {
+      sendReward(card, "reject");
+    });
+    return;
+  }
+  sendReward(card, action);
+});
+</script>
+{% endblock %}
